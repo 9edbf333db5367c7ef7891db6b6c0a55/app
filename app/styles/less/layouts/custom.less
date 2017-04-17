@@ -1,0 +1,39 @@
+// Your custom LESS styling for your application goes here
+// hide the view of the app until it's bootstrapped and rendered
+[v-cloak] {
+    display: none
+}
+
+.brand-logo {
+    font-weight: bolder;
+    img{
+        height: 65px !important;
+        vertical-align: middle;
+    }
+}
+
+.collection-header {
+    h5 {
+        font-weight: bold;
+        padding: 0 2% !important;
+    }
+}
+
+.collection-item {
+    .square {
+        border-radius: 0 !important;
+    }
+}
+
+li {
+    i.material-icons {
+        padding: 1% 4%;
+    }
+}
+
+// on an active Vue link
+li.v-link-active {
+    i.material-icons {
+        color: #ef6c00;
+    }
+}

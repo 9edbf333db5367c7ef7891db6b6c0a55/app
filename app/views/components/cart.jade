@@ -1,0 +1,11 @@
+script(type="text/x-template" id="shopping-cart")
+    .row
+        .col.s12.m12
+            .card.horizontal(v-for="item in cart")
+                .card-image
+                    img(v-bind:src="item.image")
+                .card-stacked
+                    .card-content
+                        span.card-title item.name
+                    .card-action
+                        a(v-on:click.prevent.stop="deleteItem(item.id)") Remove

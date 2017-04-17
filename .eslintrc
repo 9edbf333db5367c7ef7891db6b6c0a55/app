@@ -1,0 +1,42 @@
+{
+    "extends": "airbnb",
+    "env": {
+        "browser": true,
+        "es6": true,
+        "shared-node-browser": true,
+        "mocha": true
+    },
+    "globals": {
+        "__dirname": true,
+        "by": true,
+        "browser": true,
+        "module": true,
+        "process": true,
+        "require": true,
+        "assert": true,
+        "expect": true,
+        "sinon": true,
+        "Vue": true,
+        "jQuery": true,
+        "$": true,
+        "cordova": true,
+        "device": true
+    },
+    "rules": {
+        "prefer-template": 0,
+        "prefer-rest-params": 0,
+        "strict": 0,
+        "no-unused-expressions": 0,
+        "no-param-reassign": 0,
+        "max-len": [
+            2,
+            100,
+            2,
+            {
+                "ignoreComments": true,
+                "ignoreUrls": true,
+                "ignorePattern": "\/(.*)\/;"
+            }
+        ]
+    }
+}

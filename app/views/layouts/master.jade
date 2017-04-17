@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+
+    include ../includes/header
+
+    body
+        #application(v-cloak)
+            // Add your site or app content here
+            block content
+            
+            // router outlet
+            router-view
+
+            include ../components/home
+            include ../components/cart
+
+            include ../includes/footer
+            include ../includes/scripts
