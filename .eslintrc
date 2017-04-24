@@ -20,7 +20,8 @@
         "jQuery": true,
         "$": true,
         "cordova": true,
-        "device": true
+        "device": true,
+        "firebase": true
     },
     "rules": {
         "prefer-template": 0,

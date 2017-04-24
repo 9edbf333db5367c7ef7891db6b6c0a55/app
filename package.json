@@ -1,19 +1,19 @@
 {
-  "name": "start-to-gulp",
+  "name": "vm-application",
   "description": "One step ahead on having the best project ever with this starter kit.",
   "version": "0.1.0",
-  "homepage": "https://github.com/kn9ts/start-to-gulp",
+  "homepage": "https://github.com/vitumob/vm-application",
   "author": {
     "name": "Eugene Mutai",
     "email": "eugenemutai@gmail.com",
-    "link": "http://github.com/kn9ts"
+    "link": "http://github.com/vitumob"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/kn9ts/start-to-gulp.git"
+    "url": "git://github.com/vitumob/vm-application.git"
   },
   "bugs": {
-    "url": "https://github.com/kn9ts/start-to-gulp/issues"
+    "url": "https://github.com/vitumob/vm-application/issues"
   },
   "license": "MIT",
   "main": "public/index.html",
@@ -23,15 +23,18 @@
     "eslint": "eslint --fix ./app/scripts ./tests"
   },
   "dependencies": {
-    "firebase": "^3.7.6",
+    "axios": "^0.16.1",
+    "throttle-debounce": "^1.0.1",
     "vue": "^2.2.6",
-    "vue-router": "^2.4.0"
+    "vue-router": "^2.4.0",
+    "vuex": "^2.3.1"
   },
   "devDependencies": {
     "babel-cli": "^6.6.5",
     "babel-core": "^6.13.2",
     "babel-plugin-istanbul": "^3.1.2",
     "babel-plugin-transform-es2015-classes": "^6.18.0",
+    "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-polyfill": "^6.22.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-preset-stage-0": "^6.5.0",
