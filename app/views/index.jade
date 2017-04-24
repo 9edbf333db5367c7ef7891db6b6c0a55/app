@@ -2,11 +2,18 @@ extends layouts/master
 
 block content
     .navbar-fixed
-        nav.blue.accent-4
+        nav.blue
             .nav-wrapper
-                a(href='#!').brand-logo.bold.center
+                router-link(to="/").brand-logo.bold.center
                     //- img(src="http://res.cloudinary.com/dpmk2cnpi/image/upload/v1483877198/vm-tag_l5kop4.png")
                     img(src="images/vm-logo_hsvchn.png")
                 ul#nav-mobile.left
-                    li.nav-item(v-link="{ path: '/' }")
-                        i.material-icons.md-36.text-blue-grey.darken-4 menu
+                    li.nav-item
+                        //- v-on:click="openSidebar"
+                        a(do-the-above)
+                            i.material-icons.md-36.text-blue-grey.darken-4 menu
+
+                ul#nav-mobile.right
+                    li.nav-item
+                        router-link(to="/cart")
+                            i.material-icons.md-36.text-blue-grey card_travel

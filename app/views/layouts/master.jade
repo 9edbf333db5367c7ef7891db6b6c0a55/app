@@ -1,9 +1,9 @@
 doctype html
-html(lang="en")
+html(lang="en").grey.lighten-4
 
     include ../includes/header
 
-    body
+    body.grey.lighten-4
         #application(v-cloak)
             // Add your site or app content here
             block content
@@ -11,8 +11,8 @@ html(lang="en")
             // router outlet
             router-view
 
-            include ../components/home
-            include ../components/cart
+        include ../components/home
+        include ../components/cart
 
-            include ../includes/footer
-            include ../includes/scripts
+        include ../includes/footer
+        include ../includes/scripts

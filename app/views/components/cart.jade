@@ -1,11 +1,66 @@
 script(type="text/x-template" id="shopping-cart")
-    .row
-        .col.s12.m12
-            .card.horizontal(v-for="item in cart")
-                .card-image
-                    img(v-bind:src="item.image")
-                .card-stacked
-                    .card-content
-                        span.card-title item.name
-                    .card-action
-                        a(v-on:click.prevent.stop="deleteItem(item.id)") Remove
+    .row.valign-wrapper.shopping-cart
+        .col.s12.m12.center-align.loading-circle(v-if="loading")
+            .preloader-wrapper.big.active
+                .spinner-layer.spinner-orange-only.orange-text
+                    .circle-clipper.left
+                        .circle
+                    .gap-patch
+                        .circle
+                    .circle-clipper.right
+                        .circle
+            p.loading-text.grey-text Chasing down some chickens that escaped your cart...
+
+        .col.s12.m12(v-if="cart.length > 0 && !loading")
+            h5.center-align.grey-text.lighten-4 Your Shopping Cart
+            .card.panel.white.z-depth-1(v-for="item in cart" v-if="(typeof item === 'object' && 'image' in item)")
+                .row.valign-wrapper
+                    .col.s3
+                        img.responsive-img(v-bind:src="item.image")
+                    .col.s7
+                        span.black-text
+                            h6 {{ item.name }}
+                            span.blue-text Quantity: {{ item.quantity }}
+                    
+                    .col.s2
+                        span.white-text.badge.blue {{ item.price }}
+                        span.white-text.badge.amber.darken-4 {{ item.localPrice }}
+            
+            .card.panel.white.z-depth-1(v-if="('total_cost' in order)")
+                table.striped.order-total
+                    tbody
+                        tr.amber.darken-4.white-text
+                            td: h6: b Sub Total
+                            td: h6: b {{ order.total_cost }}
+                            td: h6: b {{ order.total_cost_local }}
+                        tr.blue.darken-1.white-text
+                            td: h6 Customs &amp; Import Fees
+                            td: h6 {{ order.customs }}
+                            td: h6 {{ order.customs_local }}
+                        tr.blue.darken-2.white-text
+                            td: h6 Shipping &amp; Handling
+                            td: h6 {{ order.shipping_cost }}
+                            td: h6 {{ order.shipping_cost_local }}
+                        tr.blue.darken-3(v-bind:class="{ 'white-text': order.vat !== 'FREE', 'blue-text text-darken-4': order.vat === 'FREE' }")
+                            td: h6 VAT
+                            td: h6 {{ order.vat }}
+                            td: h6 {{ order.vat_local }}
+                        tr.blue.darken-4.white-text
+                            td: h6: b Overall Cost
+                            td: h6: b {{ order.overall_cost }}
+                            td: h6: b {{ order.overall_cost_local }}
+
+            .checkout-button
+                a.btn-flat.btn-block.btn-large.align-center.white-text.green.z-depth-3(v-on:click.prevent.stop="checkoutShoppingCart"): b
+                    i.material-icons.left loyalty 
+                    | Check Out
+
+        .col.s12.m12.empty-shopping-cart(v-if="cart.length == 0 && !loading")
+            .row
+                .col.s12.m12.center-align
+                    i.material-icons.center-align.grey-text local_offer 
+            
+            .row.valign-wrapper
+                .col.s12.m12
+                    h5.center-align.loading-text.grey-text
+                        | You do not have items in your shopping cart

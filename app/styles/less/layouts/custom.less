@@ -1,39 +1,66 @@
-// Your custom LESS styling for your application goes here
-// hide the view of the app until it's bootstrapped and rendered
+// @import url('https://fonts.googleapis.com/css?family=Telex');
+@font-face {
+    font-family: 'Telex';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Telex'), local('Telex Regular'), url('../fonts/Telex-Regular.ttf') format('truetype');
+}
+
+html,
+body {
+    font-family: 'Telex', Arial, Helvetica, sans-serif;
+}
+
 [v-cloak] {
     display: none
 }
 
 .brand-logo {
     font-weight: bolder;
-    img{
+    img {
         height: 65px !important;
         vertical-align: middle;
     }
 }
 
-.collection-header {
-    h5 {
-        font-weight: bold;
-        padding: 0 2% !important;
+.card {
+    .card-title {
+        font-weight: normal;
+        h4 {
+            padding: 0;
+            margin: 0;
+        }
     }
 }
 
-.collection-item {
-    .square {
-        border-radius: 0 !important;
+.shopping-cart {
+    .order-total {
+        tbody tr {
+            td:first-child {
+                padding-left: 5%;
+            }
+        }
     }
-}
-
-li {
-    i.material-icons {
-        padding: 1% 4%;
+    .loading-text {
+        padding-top: 10%;
+        width: 60%;
+        margin: 0 20%;
+        font-size: 1.2em;
     }
-}
-
-// on an active Vue link
-li.v-link-active {
-    i.material-icons {
-        color: #ef6c00;
+    .loading-circle {
+        margin-top: 25%;
+        .circle-clipper .circle {
+            border-width: 6px;
+        }
+        .spinner-orange,
+        .spinner-orange-only {
+            border-color: #F27A29;
+        }
+    }
+    .empty-shopping-cart {
+        padding-top: 20%;
+        i.material-icons {
+            font-size: 4em;
+        }
     }
 }
