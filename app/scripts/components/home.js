@@ -1,20 +1,11 @@
+import { GET_EXCHANGE_RATES } from '../store/types';
+
+
 export default {
   template: '#homepage',
   data() {
     return {
-      items: [],
-      inAppBrowserOptions: {
-        statusbar: {
-          color: '#1A7CF9',
-        },
-        toolbar: {
-          height: 48,
-          color: '#1A7CF9',
-        },
-        title: {
-          showPageTitle: true,
-          color: '#fefefe',
-        },
+      customInAppBrowserOptions: {
         closeButton: {
           image: 'cancel',
           imagePressed: 'cancel',
@@ -30,26 +21,27 @@ export default {
       },
     };
   },
+  beforeMount() {
+    this.$store.dispatch(GET_EXCHANGE_RATES);
+  },
   methods: {
     openInAppBrowser(event) {
       const {
-        'data-cart-url': {
-          value: merchantCartUrl,
-        },
-        href: {
-          value: merchantUrl,
-        },
+        'data-cart-url': { value: merchantCartUrl },
+        href: { value: merchantUrl },
       } = event.target.attributes;
-      const options = [merchantUrl, '_blank', this.inAppBrowserOptions];
-      const browser = cordova.ThemeableBrowser.open(...options);
+
+      const browser = cordova.ThemeableBrowser.open(...[
+        merchantUrl,
+        '_blank',
+        Object.assign(this.inAppBrowserOptions, this.customInAppBrowserOptions),
+      ]);
 
       browser.addEventListener('exportShoppingCartButtonPressed', () => {
         const redirectToCartScript = {
           code: `window.location='${merchantCartUrl}'`,
         };
-
         browser.addEventListener('loadstop', (e) => {
-          console.log(e);
           if (e.url === merchantCartUrl) {
             const getDOMScript = {
               code: 'document.documentElement.innerHTML',
@@ -62,9 +54,10 @@ export default {
                 const html = $(doc.querySelector('html'));
                 const cart = $(html).find('#sc-active-cart .sc-list-body .sc-list-item');
                 const cartItems = cart.not('.sc-action-move-to-cart');
+                let items;
 
                 if (cartItems.length) {
-                  this.items = cartItems.map(function cartItemLoop() {
+                  items = cartItems.map(function cartItemLoop() {
                     const item = {};
                     const itemElement = $(this);
                     item.id = itemElement.data('asin');
@@ -82,7 +75,8 @@ export default {
                       item.quantity = parseInt(itemElement.find('input.sc-quantity-textfield').val(), 10);
                     }
 
-                    const priceString = itemElement.find('.sc-product-price').text().replace(/\$|,|\s/g, '');
+                    const priceString = itemElement.find('.sc-product-price')
+                      .text().replace(/\$|,|\s/g, '');
                     if (priceString.indexOf('£') > -1) {
                       item.priceInPounds = true;
                     }
@@ -90,11 +84,14 @@ export default {
                     return item;
                   });
 
-                  const { items } = this;
-                  window.cart = { id: device.uuid, date: new Date().toLocaleString(), items };
-                  console.log(window.cart);
-
                   if (items.length > 0) {
+                    const order = {
+                      merchant: 'amazon',
+                      uuid: device.uuid,
+                      date: new Date().toLocaleString(),
+                      items,
+                    };
+                    this.$store.commit('setTemporaryOrder', order);
                     this.$router.push({ name: 'shoppingCart' });
                     browser.close();
                   }

@@ -13,11 +13,11 @@ export function preprocessLess(gulp, plugins, paths) {
       .pipe(plugins.less())
       .pipe(plugins.autoprefixer('last 5 versions'))
       // Remove any unused CSS
-      .pipe(plugins.uncss({
-        html: [process.env.PROJECT_BUILD_FOLDER + '/**/*.html'],
-        // CSS Selectors for UnCSS to ignore
-        ignore: []
-      }))
+      // .pipe(plugins.uncss({
+      //   html: [process.env.PROJECT_BUILD_FOLDER + '/**/*.html'],
+      //   // CSS Selectors for UnCSS to ignore
+      //   ignore: []
+      // }))
       .pipe(plugins.sourcemaps.init())
       // minify on production environment
       .pipe(plugins.if(production, plugins.cssnano()))
