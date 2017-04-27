@@ -10,6 +10,8 @@ export default new Vuex.Store({
     order: {},
     temporaryOrder: {},
     rates: {},
+    PayPalToken: undefined,
+    payment: {},
     loading: false,
   },
   mutations: {
@@ -30,6 +32,12 @@ export default new Vuex.Store({
     },
     triggerLoadingState(state, bool) {
       state.loading = bool !== undefined ? bool : !state.loading;
+    },
+    setPayPalToken(state, tokenObject) {
+      state.PayPalToken = tokenObject;
+    },
+    setPaymentDetails(state, paymentDetails) {
+      state.payment = paymentDetails;
     },
   },
   actions: {
@@ -93,6 +101,11 @@ export default new Vuex.Store({
           console.log(rates);
           commit('updateExchangeRates', rates);
         });
+    },
+    getPayPalToken({ commit }) {
+      $.get('https://vitumob.xyz/payments/paypal/token').done(tokenResponse => {
+        commit('setPayPalToken', tokenResponse);
+      });
     },
   },
 });
