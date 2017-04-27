@@ -1,9 +1,11 @@
+import objectValues from 'object.values';
 import facebook from '../config/facebook';
 import firebaseConfig from '../config/firebase';
 
 
 export default {
   install(Vue) {
+    $.support.cors = true;
     const inAppBrowserOptions = {
       statusbar: {
         color: '#1A7CF9',
@@ -17,6 +19,10 @@ export default {
         color: '#fefefe',
       },
     };
+
+    if (!Object.values) {
+      objectValues.shim();
+    }
 
     Vue.mixin({
       data() {

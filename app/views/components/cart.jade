@@ -13,6 +13,7 @@ script(type="text/x-template" id="shopping-cart")
 
         .col.s12.m12(v-if="cart.length > 0 && !loading")
             h5.center-align.grey-text.lighten-4 Your Shopping Cart
+            
             .card.panel.white.z-depth-1(v-for="item in cart" v-if="(typeof item === 'object' && 'image' in item)")
                 .row.valign-wrapper
                     .col.s3
@@ -24,12 +25,12 @@ script(type="text/x-template" id="shopping-cart")
                     
                     .col.s2
                         span.white-text.badge.blue {{ item.price }}
-                        span.white-text.badge.amber.darken-4 {{ item.localPrice }}
+                        span.white-text.badge.orange.accent-4 {{ item.localPrice }}
             
             .card.panel.white.z-depth-1(v-if="('total_cost' in order)")
                 table.striped.order-total
                     tbody
-                        tr.amber.darken-4.white-text
+                        tr.orange.accent-4.white-text
                             td: h6: b Sub Total
                             td: h6: b {{ order.total_cost }}
                             td: h6: b {{ order.total_cost_local }}
@@ -54,6 +55,22 @@ script(type="text/x-template" id="shopping-cart")
                 a.btn-flat.btn-block.btn-large.align-center.white-text.green.z-depth-3(v-on:click.prevent.stop="checkoutShoppingCart"): b
                     i.material-icons.left loyalty 
                     | Check Out
+
+        #payment-options.modal.bottom-sheet
+            .modal-content
+                .row
+                    .col.s12
+                        a.btn-flat.btn-block.btn-large.align-center.white-text.indigo.darken-4.z-depth-3(v-on:click.prevent.stop="checkoutShoppingCart")
+                            b
+                                i.material-icons.left credit_card
+                                | Checkout with PayPal
+
+                        span &nbsp;        
+                        a.btn-flat.btn-block.btn-large.align-center.white-text.red.darken-2.z-depth-3(v-on:click.prevent.stop="checkoutShoppingCart")
+                            b
+                                i.material-icons.left phone_iphone 
+                                | Checkout with M-Pesa
+
 
         .col.s12.m12.empty-shopping-cart(v-if="cart.length == 0 && !loading")
             .row

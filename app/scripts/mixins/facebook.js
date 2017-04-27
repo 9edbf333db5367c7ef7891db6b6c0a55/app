@@ -10,7 +10,7 @@ export default {
           `client_id=${this.facebook.appId}&`,
           `redirect_uri=${this.redirectUrl}&`,
           'response_type=token&',
-          // 'state=SomeSuperSecretCodeIUseToCubCSRF',
+          'state=SomeSuperSecretCodeIUseToCubCSRF',
           `scope=${this.facebook.scopes.join(',')}`,
         ];
 
@@ -23,7 +23,11 @@ export default {
 
             // Build Firebase credential with the Facebook access token.
             const credential = firebase.auth.FacebookAuthProvider.credential(params.access_token);
-            resolve(firebase.auth().signInWithCredential(credential));
+            firebase.auth().signInWithCredential(credential).then(user => {
+              this.$store.commit('setUser', user);
+              if (this.redirectBackToShoppingCart) this.redirectBackToShoppingCart();
+              resolve(user);
+            });
             browser.close();
           }
         });

@@ -20,6 +20,7 @@
     "firebase": "^3.8.0",
     "vue": "^2.2.6",
     "materialize": "^0.98.1",
-    "moment": "^2.18.1"
+    "moment": "^2.18.1",
+    "pusher-js": "pusher#^4.1.0"
   }
 }

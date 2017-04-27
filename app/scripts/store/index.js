@@ -5,6 +5,7 @@ import { CREATE_NEW_ORDER, GET_EXCHANGE_RATES } from './types';
 Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
+    user: undefined,
     shoppingCart: [],
     order: {},
     temporaryOrder: {},
@@ -12,6 +13,9 @@ export default new Vuex.Store({
     loading: false,
   },
   mutations: {
+    setUser(state, user) {
+      state.user = user;
+    },
     setTemporaryOrder(state, temporaryOrder) {
       state.temporaryOrder = temporaryOrder;
     },
@@ -24,7 +28,7 @@ export default new Vuex.Store({
     updateExchangeRates(state, rates) {
       state.rates = rates;
     },
-    setLoadingState(state, bool) {
+    triggerLoadingState(state, bool) {
       state.loading = bool !== undefined ? bool : !state.loading;
     },
   },
@@ -76,7 +80,7 @@ export default new Vuex.Store({
         console.log(orderInLocalCurrency);
         commit('updateOrderDetails', orderInLocalCurrency);
         commit('setTemporaryOrder', {});
-        commit('setLoadingState');
+        commit('triggerLoadingState');
       });
     },
     [GET_EXCHANGE_RATES]({ commit }) {

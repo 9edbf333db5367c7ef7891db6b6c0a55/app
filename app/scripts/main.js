@@ -4,6 +4,7 @@ import config from './plugins/config';
 
 import Home from './components/home';
 import ShoppingCart from './components/shoppingCart';
+import SignIn from './components/signIn';
 
 
 const routes = [{
@@ -14,6 +15,10 @@ const routes = [{
   path: '/cart',
   name: 'shoppingCart',
   component: ShoppingCart,
+}, {
+  path: '/sign-in',
+  name: 'signIn',
+  component: SignIn,
 }, {
   path: '/*',
   redirect: '/',
