@@ -24,11 +24,13 @@ export default {
       },
       formInputsAreInvalid: true,
       errorMessage: undefined,
+      loadingExplanation: 'Getting you a fresh cup of tea...',
     };
   },
   computed: mapState({
     user: state => state.user,
     shoppingCart: 'shoppingCart',
+    loading: 'loading',
   }),
   methods: {
     validateAuthenticationForm() {
@@ -51,16 +53,19 @@ export default {
       }
     },
     loginOrSignUpUser() {
+      this.$store.commit('triggerLoadingState');
       const credentials = Object.values(this.auth);
       firebase.auth()
         .signInWithEmailAndPassword(...credentials)
         .then(user => {
+          this.$store.commit('triggerLoadingState');
           this.$store.commit('setUser', user);
           this.redirectBackToShoppingCart();
         })
         .catch(signInError => {
           if (signInError.code === 'auth/wrong-password') {
             this.errorMessage = 'Invalid password or email address.';
+            this.$store.commit('triggerLoadingState');
             return;
           }
 
@@ -70,6 +75,7 @@ export default {
               .then(user => { // {email, emailVerified, uid}
                 this.errorMessage = undefined;
                 this.$store.commit('setUser', user);
+                this.$store.commit('triggerLoadingState');
                 this.redirectBackToShoppingCart();
               })
               .catch(signUpError => {
@@ -77,6 +83,7 @@ export default {
                   this.auth.password = '';
                   this.validation.password.weak = true;
                   this.errorMessage = 'Detected weak password. Please enter a new strong one.';
+                  this.$store.commit('triggerLoadingState');
                 }
               });
           }

@@ -1,0 +1,10 @@
+.col.s12.m12.center-align.loading-circle(v-if="loading")
+    .preloader-wrapper.big.active
+        .spinner-layer.spinner-orange-only.orange-text
+            .circle-clipper.left
+                .circle
+            .gap-patch
+                .circle
+            .circle-clipper.right
+                .circle
+    p.loading-text.grey-text {{ loadingExplanation }}
