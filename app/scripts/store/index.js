@@ -1,17 +1,18 @@
 import Vuex from 'vuex';
-import { CREATE_NEW_ORDER, GET_EXCHANGE_RATES } from './types';
+import { CREATE_NEW_ORDER, GET_EXCHANGE_RATES, GET_PAYPAL_TOKEN } from './types';
 
 
-Vue.use(Vuex);
+// Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
-    user: undefined,
+    user: {},
     shoppingCart: [],
     order: {},
     temporaryOrder: {},
     rates: {},
     PayPalToken: undefined,
     payment: {},
+    selectedDeliveryLocation: undefined,
     loading: false,
   },
   mutations: {
@@ -30,14 +31,18 @@ export default new Vuex.Store({
     updateExchangeRates(state, rates) {
       state.rates = rates;
     },
-    triggerLoadingState(state, bool) {
-      state.loading = bool !== undefined ? bool : !state.loading;
-    },
     setPayPalToken(state, tokenObject) {
       state.PayPalToken = tokenObject;
     },
     setPaymentDetails(state, paymentDetails) {
       state.payment = paymentDetails;
+    },
+    setDeliveryLocation(state, deliveryLocation) {
+      state.selectedDeliveryLocation = deliveryLocation;
+      state.user.deliveryLocation = deliveryLocation;
+    },
+    triggerLoadingState(state, bool) {
+      state.loading = bool !== undefined ? bool : !state.loading;
     },
   },
   actions: {
@@ -102,7 +107,7 @@ export default new Vuex.Store({
           commit('updateExchangeRates', rates);
         });
     },
-    getPayPalToken({ commit }) {
+    [GET_PAYPAL_TOKEN]({ commit }) {
       $.get('https://vitumob.xyz/payments/paypal/token').done(tokenResponse => {
         commit('setPayPalToken', tokenResponse);
       });
