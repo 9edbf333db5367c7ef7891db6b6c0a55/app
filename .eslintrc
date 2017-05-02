@@ -21,7 +21,8 @@
         "$": true,
         "cordova": true,
         "device": true,
-        "firebase": true
+        "firebase": true,
+        "Materialize": true
     },
     "rules": {
         "prefer-template": 0,
