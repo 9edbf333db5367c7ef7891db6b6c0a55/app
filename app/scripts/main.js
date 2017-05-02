@@ -5,7 +5,8 @@ import config from './plugins/config';
 import Home from './components/home';
 import ShoppingCart from './components/shoppingCart';
 import SignIn from './components/signIn';
-
+import UpdateUserInfo from './components/updateUserInfo';
+import UserLocation from './components/userLocation';
 
 const routes = [{
   path: '/',
@@ -16,9 +17,17 @@ const routes = [{
   name: 'shoppingCart',
   component: ShoppingCart,
 }, {
-  path: '/sign-in',
+  path: '/user/signin',
   name: 'signIn',
   component: SignIn,
+}, {
+  path: '/user/update',
+  name: 'updateUserInfo',
+  component: UpdateUserInfo,
+}, {
+  path: '/user/location',
+  name: 'userLocation',
+  component: UserLocation,
 }, {
   path: '/*',
   redirect: '/',
