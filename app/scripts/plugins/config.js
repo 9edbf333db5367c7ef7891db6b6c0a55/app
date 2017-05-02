@@ -33,9 +33,6 @@ export default {
           redirectUrl: 'https://vitumob.xyz',
         };
       },
-      created() {
-        $('.button-collapse').sideNav();
-      },
       computed: mapState({
         user: state => state.user,
       }),

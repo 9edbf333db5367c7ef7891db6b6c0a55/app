@@ -6,9 +6,9 @@ block content
             .nav-wrapper
                 router-link(to="/user/location").brand-logo.bold.center
                     img(src="images/vm-logo_hsvchn.png")
-                ul#nav-mobile.left(v-if="user.email")
+                ul#nav-mobile.left
                     li.nav-item
-                        a.button-collapse.show-on-large(href="javascript:void(0)" data-activates="side-menu")
+                        a.button-collapse(href="javascript:void(0)" data-activates="side-menu")
                             i.material-icons.md-36.text-blue-grey.darken-4 menu
 
                 ul#nav-mobile.right
@@ -33,7 +33,7 @@ block content
                     span.white-text.email {{ user.email }}
 
         
-        li.menu-item
+        li.menu-item(v-show="user.email")
             a.grey-text.text-lighten-3(href="javascript:void(0)")
                 i.material-icons.grey-text.text-lighten-3 shopping_cart 
                 | Your Orders
@@ -41,4 +41,8 @@ block content
             a.grey-text.text-lighten-3(href="javascript:void(0)")
                 i.material-icons.grey-text.text-lighten-3 location_on 
                 | Your Location
-
+        
+        li.menu-item(v-show="!user.email")
+            router-link.grey-text.text-lighten-3(to="/user/signin")
+                i.material-icons.grey-text.text-lighten-3 lock 
+                | Sign In

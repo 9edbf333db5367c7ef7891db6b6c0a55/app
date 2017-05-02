@@ -27,6 +27,9 @@ export default {
     shoppingCart: 'shoppingCart',
     loading: 'loading',
   }),
+  mounted() {
+    $('.button-collapse').sideNav('hide');
+  },
   methods: {
     loginOrSignUpUser() {
       this.$store.commit('triggerLoadingState');
