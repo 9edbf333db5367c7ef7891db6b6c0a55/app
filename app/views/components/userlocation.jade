@@ -1,0 +1,25 @@
+script(type="text/x-template" id="user-location")
+    .row.valign-wrapper.user-location
+        include ../partials/loadingcircle
+
+        .col.s12
+            .card.panel.white.z-depth-1
+                .row
+                    h5.grey-text.text-lighten-1.center-align.error Where Should We Deliver Your Order?
+                    .input-field.col.s12.m12
+                        i.material-icons.orange-text.text-darken-4.prefix location_on
+                        input.validate#email-address(type="email" v-model="location.search" v-on:keyup="searchForLocation" required placeholder="Enter Delivery Location")
+                    p.radio-button
+                        input.blue-text.filled-in.validate#user-home(type="checkbox" v-model="location.homeArea" required checked)
+                        label(for="user-home") The location I select is my home area.
+                .progress.deep-orange(v-show="searchingForLocation")
+                    .indeterminate.white
+
+            .card.panel.white.z-depth-1(v-if="locationOptions.length")
+                .row
+                    .col.s12
+                        ul.collection.with-header
+                            li.collection-header
+                                h6.center-align: b.orange-text.text-darken-2 Select the nearest place to your location
+                            li.collection-item(v-for="place in locationOptions" v-bind:id="place.id" v-on:click="selectThisLocation(place.id)")
+                                h6.left-align.black-text {{ place.name }}, {{ place.vicinity }}
