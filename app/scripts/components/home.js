@@ -1,3 +1,4 @@
+import { mapState } from 'vuex';
 import { GET_EXCHANGE_RATES } from '../store/types';
 import merchantScrapers from '../scrapers';
 
@@ -22,8 +23,13 @@ export default {
       },
     };
   },
+  computed: mapState({
+    rates: state => state.rates,
+  }),
   beforeMount() {
-    this.$store.dispatch(GET_EXCHANGE_RATES);
+    if (!Object.keys(this.rates).length) {
+      this.$store.dispatch(GET_EXCHANGE_RATES);
+    }
   },
   methods: {
     openInAppBrowser(event) {
