@@ -7,14 +7,14 @@ script(type="text/x-template" id="sign-in")
                 .row
                     h5.white-text.red.center-align.error.curved-borders(v-show="errorMessage") {{ errorMessage }}
                     .input-field.col.s12
-                        i.material-icons.prefix.orange-text.text-darken-4 account_circle
-                        input.validate#email-address(type="email" v-on:keyup="validateAuthenticationForm" v-model="auth.email" required)
-                        label(for="email-address" data-error="Invalid email address" data-success="Great!") Email Address
+                        i.material-icons.prefix.orange-text.text-darken-4 email
+                        input.validate#email-address(type="email" v-on:keyup="validateAuthenticationForm" v-model="auth.email" required placeholder="Email Address")
+
                     .input-field.col.s12
                         i.material-icons.prefix.orange-text.text-darken-4 lock
-                        input.validate#password(type="password" v-on:keyup="validateAuthenticationForm" v-model="auth.password" min-length="6" required)
-                        label(for="password") Password
-                        span.red-text.align-center(v-show="validation.password.weak") That's a weak password!
+                        input.validate#password(type="password" v-on:keyup="validateAuthenticationForm" v-model="auth.password" min-length="6" required placeholder="Password")
+                        span.red-text.align-center(v-show="validation.password.weak") Please provide a stronger password
+
                     .input-field.col.s12
                         a.btn.btn-block.btn-large.waves-effect.waves-light.align-center.white-text.orange.darken-4.z-depth-1(v-on:click.prevent.stop="loginOrSignUpUser" v-bind:class="{ 'disabled': formInputsAreInvalid }")
                             b
@@ -26,4 +26,4 @@ script(type="text/x-template" id="sign-in")
                         a.btn.btn-block.btn-large.waves-effect.waves-light.align-center.white-text.blue.darken-4.z-depth-1(v-on:click.prevent.stop="loginWithFacebook")
                             b
                                 i.material-icons.left face
-                                | Sign In/Up with Facebook
+                                | Sign in With FB

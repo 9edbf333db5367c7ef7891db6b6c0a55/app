@@ -4,8 +4,6 @@ export default {
     'public_profile',
     'email',
     'user_birthday',
-    'user_likes',
-    'user_hometown',
     'user_location',
   ],
 };

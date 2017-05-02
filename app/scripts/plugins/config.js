@@ -1,3 +1,4 @@
+import { mapState } from 'vuex';
 import objectValues from 'object.values';
 import facebook from '../config/facebook';
 import firebaseConfig from '../config/firebase';
@@ -32,6 +33,12 @@ export default {
           redirectUrl: 'https://vitumob.xyz',
         };
       },
+      created() {
+        $('.button-collapse').sideNav();
+      },
+      computed: mapState({
+        user: state => state.user,
+      }),
     });
 
     firebase.initializeApp(firebaseConfig);

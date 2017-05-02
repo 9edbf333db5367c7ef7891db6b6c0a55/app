@@ -1,16 +1,14 @@
 import { mapState } from 'vuex';
-// import debounce from 'throttle-debounce/debounce';
 import facebook from '../mixins/facebook';
+import validationMethod from '../mixins/validationMethod';
+
 
 export default {
   template: '#sign-in',
-  mixins: [facebook],
+  mixins: [facebook, validationMethod],
   data() {
     return {
-      auth: {
-        email: '',
-        password: '',
-      },
+      valuesToValidate: ['email', 'password'],
       validation: {
         email: {
           regexp: /[A-Z0-9._%+-]+@[A-Z0-9-]+.+.[A-Z]{2,4}/im,
@@ -22,45 +20,27 @@ export default {
           weak: false,
         },
       },
-      formInputsAreInvalid: true,
-      errorMessage: undefined,
-      loadingExplanation: 'Getting you a fresh cup of tea...',
+      loadingExplanation: 'Finding the right door key to let you in...',
     };
   },
   computed: mapState({
-    user: state => state.user,
     shoppingCart: 'shoppingCart',
     loading: 'loading',
   }),
   methods: {
-    validateAuthenticationForm() {
-      for (const key of Object.keys(this.validation)) {
-        this.validation[key].invalid = false;
-        if (!this.validation[key].regexp.test(this.auth[key])) {
-          this.validation[key].invalid = true;
-        }
-      }
-
-      this.formInputsAreInvalid = !(Object.values(this.auth)
-        .every(prop => prop !== '' && prop.length !== 0) &&
-        Object.values(this.validation).every(prop => !prop.invalid));
-
-      if (!this.formInputsAreInvalid) {
-        if (!this.validation.email.regexp.test(this.auth.email)) {
-          this.validation.email.invalid = true;
-          return;
-        }
-      }
-    },
     loginOrSignUpUser() {
       this.$store.commit('triggerLoadingState');
-      const credentials = Object.values(this.auth);
+      const credentials = [this.auth.email, this.auth.password];
       firebase.auth()
         .signInWithEmailAndPassword(...credentials)
         .then(user => {
           this.$store.commit('triggerLoadingState');
           this.$store.commit('setUser', user);
-          this.redirectBackToShoppingCart();
+
+          if (user.displayName) {
+            this.redirectBackToShoppingCart();
+          }
+          this.$router.push({ name: 'updateUserInfo' });
         })
         .catch(signInError => {
           if (signInError.code === 'auth/wrong-password') {
@@ -73,10 +53,16 @@ export default {
             firebase.auth()
               .createUserWithEmailAndPassword(...credentials)
               .then(user => { // {email, emailVerified, uid}
+                user.sendEmailVerification();
+
                 this.errorMessage = undefined;
                 this.$store.commit('setUser', user);
                 this.$store.commit('triggerLoadingState');
-                this.redirectBackToShoppingCart();
+
+                if (user.displayName) {
+                  this.redirectBackToShoppingCart();
+                }
+                this.$router.push({ name: 'updateUserInfo' });
               })
               .catch(signUpError => {
                 if (signUpError.code === 'auth/weak-password') {

@@ -1,0 +1,22 @@
+script(type="text/x-template" id="update-user-info")
+    .row.valign-wrapper.sign-in
+        include ../partials/loadingcircle
+
+        .col.s12(v-if="!loading")
+            h5.center-align.grey-text.lighten-4 It's very important we have the following info
+            .card.panel.white.z-depth-1
+                .row
+                    h5.white-text.red.center-align.error.curved-borders(v-show="errorMessage") {{ errorMessage }}
+                    .input-field.col.s12
+                        i.material-icons.prefix.orange-text.text-darken-4 account_circle
+                        input.validate#fullnames(type="text" v-on:keyup="validateAuthenticationForm" v-model="auth.name" required placeholder="Your Name (at least 2)")
+
+                    .input-field.col.s12
+                        i.material-icons.prefix.orange-text.text-darken-4 phone
+                        input.validate#phone-number(type="text" v-on:keyup="validateAuthenticationForm" v-model="auth.phoneNumber" required placeholder="Phone Number")
+
+                    .input-field.col.s12
+                        a.btn.btn-block.btn-large.waves-effect.waves-light.align-center.white-text.orange.darken-4.z-depth-1(v-on:click.prevent.stop="updateUserInfo" v-bind:class="{ 'disabled': formInputsAreInvalid }")
+                            b
+                                i.material-icons.left info
+                                | Submit
