@@ -38,7 +38,7 @@ export default {
           value: merchantUrl,
         },
         'data-merchant': {
-          value: merchant,
+          value: merchantName,
         },
         'data-cart-url': {
           value: merchantCartUrl,
@@ -60,22 +60,21 @@ export default {
             const getDOMScript = {
               code: 'document.documentElement.innerHTML',
             };
-            browser.executeScript(getDOMScript, (documentHtml) => {
-              let items;
+            browser.executeScript(getDOMScript, ([documentHtml]) => {
+              const { [merchantName]: merchant } = merchantScrapers;
               const doc = document.implementation.createHTMLDocument('Amazon');
-              doc.documentElement.innerHTML = documentHtml[0];
-              console.log(merchantScrapers[merchant]);
+              doc.documentElement.innerHTML = documentHtml;
 
               $(doc).ready(() => {
-                items = merchantScrapers[merchant].scraper(doc);
+                const items = merchant.scrape(doc);
                 if (items.length > 0) {
                   const order = {
-                    merchant,
+                    merchant: merchantName,
                     uuid: device.uuid,
                     date: new Date().toLocaleString(),
                     items,
                   };
-                  this.$store.commit('setTemporaryOrder', order);
+                  this.$store.commit('setNewOrder', order);
                   this.$router.push({ name: 'shoppingCart' });
                   browser.close();
                 }

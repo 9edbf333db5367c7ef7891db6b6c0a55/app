@@ -2,8 +2,8 @@ export default {
   name: 'Amazon',
   host: 'https://www.amazon.com',
   cartPath: '/gp/cart/view.html/ref=nav_cart',
-  scraper(doc) {
-    const html = $(doc.querySelector('html'));
+  scrape(htmlDoc) {
+    const html = $(htmlDoc.querySelector('html'));
     const cart = $(html).find('#sc-active-cart .sc-list-body .sc-list-item');
     const cartItems = cart.not('.sc-action-move-to-cart');
 
