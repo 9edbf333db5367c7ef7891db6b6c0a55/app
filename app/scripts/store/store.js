@@ -2,31 +2,29 @@ import Vuex from 'vuex';
 import { CREATE_NEW_ORDER, GET_EXCHANGE_RATES, GET_PAYPAL_TOKEN } from './types';
 
 
-// Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     user: {},
     shoppingCart: [],
     order: {},
-    temporaryOrder: {},
     rates: {},
     PayPalToken: undefined,
     payment: {},
-    selectedDeliveryLocation: undefined,
+    deliveryLocation: undefined,
     loading: false,
   },
   mutations: {
     setUser(state, user) {
       state.user = user;
     },
-    setTemporaryOrder(state, temporaryOrder) {
-      state.temporaryOrder = temporaryOrder;
-    },
-    updateShoppingCart(state, payload) {
-      state.shoppingCart = payload.items;
-    },
-    updateOrderDetails(state, order) {
+    setNewOrder(state, order) {
       state.order = order;
+    },
+    updateShoppingCart(state, cart) {
+      state.shoppingCart = cart.items;
+    },
+    updateOrderDetails(state, orderDetailsWithLocalCosts) {
+      state.order = Object.assign(state.order, orderDetailsWithLocalCosts);
     },
     updateExchangeRates(state, rates) {
       state.rates = rates;
@@ -38,7 +36,7 @@ export default new Vuex.Store({
       state.payment = paymentDetails;
     },
     setDeliveryLocation(state, deliveryLocation) {
-      state.selectedDeliveryLocation = deliveryLocation;
+      state.deliveryLocation = deliveryLocation;
       state.user.deliveryLocation = deliveryLocation;
     },
     triggerLoadingState(state, bool) {
@@ -48,9 +46,10 @@ export default new Vuex.Store({
   actions: {
     [CREATE_NEW_ORDER]({ commit, state }) {
       const items = [];
-      const order = state.temporaryOrder;
-      const roundOf = (num, decimalPlaces) =>
-        +(Math.round(num + `e+${decimalPlaces}`) + `e-${decimalPlaces}`);
+      const order = state.order;
+      const roundOf = (num, decimalPlaces) => (
+        +(Math.round(num + `e+${decimalPlaces}`) + `e-${decimalPlaces}`)
+      );
 
 
       for (const prop in order.items) {
@@ -67,32 +66,36 @@ export default new Vuex.Store({
       order.items = items;
       order.exchange_rate = state.rates.KES;
 
-      $.ajax({
+      const orderData = JSON.stringify({ order: JSON.stringify(order) });
+      const createOrderRequest = $.ajax({
         url: 'https://vitumob.xyz/order',
         type: 'POST',
         dataType: 'json',
-        data: JSON.stringify({ order: JSON.stringify(order) }),
+        data: orderData,
         contentType: 'application/json',
-      }).done((response) => {
+      });
+
+      createOrderRequest.done((orderCreated) => {
         const informationKeys = ['markup', 'order_hex', 'order_id'];
-        const orderInLocalCurrency = Object.keys(response).reduce((obj, key) => {
-          if (informationKeys.indexOf(key) === -1) {
-            obj[key] = response[key];
-            obj[`${key}_local`] = roundOf(response[key] * state.rates.KES, 2);
-            if (key === 'shipping_cost' && response[key] === 0) {
+        const orderCreatedWithLocalCosts = Object.keys(orderCreated).reduce((obj, key) => {
+          if (informationKeys.indexOf(key) < 0) {
+            if (key === 'shipping_cost' && orderCreated[key] === 0) {
               obj[key] = 'FREE';
               obj[`${key}_local`] = 'SHIPPING';
+              return obj;
             }
+
+            obj[key] = orderCreated[key];
+            obj[`${key}_local`] = roundOf(orderCreated[key] * state.rates.KES, 2);
             return obj;
           }
 
-          obj[key] = response[key];
+          obj[key] = orderCreated[key];
           return obj;
         }, {});
 
-        console.log(orderInLocalCurrency);
-        commit('updateOrderDetails', orderInLocalCurrency);
-        commit('setTemporaryOrder', {});
+        console.log(orderCreatedWithLocalCosts);
+        commit('updateOrderDetails', orderCreatedWithLocalCosts);
         commit('triggerLoadingState');
       });
     },
@@ -103,7 +106,6 @@ export default new Vuex.Store({
             obj[curr.code] = curr.rate;
             return obj;
           }, {});
-          console.log(rates);
           commit('updateExchangeRates', rates);
         });
     },

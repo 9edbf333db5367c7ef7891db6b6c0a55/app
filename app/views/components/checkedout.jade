@@ -1,0 +1,11 @@
+script(type="text/x-template" id="order-checked-out")
+    .row.valign-wrapper
+        .col.s12.m12
+            .card
+                .card-image
+                    img(src="./images/stork.gif")
+                    span.card-title.text-orange: b Your order is on it's way
+                .card-content
+                    p We have recieved your order details and payment. Your order is being processed and should begin it's journey to your doorstep in a short while. Your babies, oops! We meant your order will arrive at your doorstep in 2 - 4 weeks.
+                .card-action.yellow.accent-3
+                    router-link.deep-orange-text.text-darken-2(to="/home"): b Great. I'm Waiting!
