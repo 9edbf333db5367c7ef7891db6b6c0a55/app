@@ -3,9 +3,9 @@ script(type="text/x-template" id="user-location")
         include ../partials/loadingcircle
 
         .col.s12
+            h5.grey-text.center-align.error Where Should We Deliver Your Order?
             .card.panel.white.z-depth-1
                 .row
-                    h5.grey-text.text-lighten-1.center-align.error Where Should We Deliver Your Order?
                     .input-field.col.s12.m12
                         i.material-icons.orange-text.text-darken-4.prefix location_on
                         input.validate#email-address(type="email" v-model="location.search" v-on:keyup="searchForLocation" required placeholder="Enter Delivery Location")

@@ -16,44 +16,60 @@ export default {
     };
   },
   computed: mapState({
-    user: state => state.user,
     order: state => state.order,
+    payment: 'payment',
+    deliveryLocation: 'deliveryLocation',
     loading: 'loading',
-    selectedDeliveryLocation: 'selectedDeliveryLocation',
   }),
+  mounted() {
+    if (this.payment) Materialize.toast('Payment completed successfully!', 3000);
+  },
   methods: {
     selectThisLocation(selectedPlaceId) {
       let deliveryLocation = this.locationOptions.filter(place => place.id === selectedPlaceId);
       deliveryLocation = deliveryLocation.length ? deliveryLocation[0] : null;
 
-      const { geometry: { location: { lat: lat, lng: long } } } = deliveryLocation;
-      deliveryLocation = Object.assign(deliveryLocation, { lat, long });
-      this.$store.commit('setDeliveryLocation', deliveryLocation);
+      const {
+        geometry: { location: { lat: lat, lng: long } },
+        id, place_id, name, vicinity,
+      } = deliveryLocation;
+      deliveryLocation = { id, place_id, name, vicinity, lat, long };
       console.log(deliveryLocation);
 
+      this.$store.commit('setDeliveryLocation', deliveryLocation);
       $.post(`https://vitumob.xyz/cart/${this.order.order_hex}/location`, {
         delivery_location: JSON.stringify(deliveryLocation),
+        home_area: this.location.homeArea,
       }).done(response => {
         console.log(response);
+        this.$router.push({ name: 'checkedOut' });
       }).catch(error => {
         throw error;
       });
     },
     searchForLocation() {
-      if (this.location.search && this.location.search.length >= 3) {
+      const geolocationOptions = {
+        maximumAge: 1800000, // 30 minutes
+      };
+      const onError = error => { throw error; };
+      const onSuccess = ({ coords }) => {
         const params = [
-          'location=-1.3062641,36.777463',
-          'radius=7500',
+          `location=${coords.latitude},${coords.longitude}`,
+          'radius=5000',
           `keyword=${this.location.search}`,
           `key=${this.googleMapsApiKey}`,
         ];
 
         const resourceURL = `${this.apiURL}?${params.join('&')}`;
         this.getPlacesFromGoogleMapsApi(resourceURL, this);
+      };
+
+      if (this.location.search && this.location.search.length >= 3) {
+        this.searchingForLocation = true;
+        navigator.geolocation.getCurrentPosition(onSuccess, onError, geolocationOptions);
       }
     },
     getPlacesFromGoogleMapsApi: throttle((resourceURL, scope) => {
-      scope.searchingForLocation = true;
       $.get(resourceURL).done(response => {
         console.log(response);
         scope.locationOptions = response.results;
