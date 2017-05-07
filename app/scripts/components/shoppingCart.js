@@ -12,23 +12,22 @@ export default {
   },
   computed: mapState({
     cart: state => state.shoppingCart,
-    order: 'order',
-    loading: 'loading',
     rates: 'rates',
+    order: 'order',
     PayPalToken: 'PayPalToken',
-    temporaryOrder: 'temporaryOrder',
+    loading: 'loading',
   }),
-  beforeCreate() {
+  created() {
     if (!this.PayPalToken) {
       this.$store.dispatch(GET_PAYPAL_TOKEN);
     }
   },
-  mounted() {
-    if (Object.keys(this.temporaryOrder).length) {
+  beforeMount() {
+    // if an order was exported but the server has not created the order
+    if (Object.keys(this.order).length && !this.order.hasOwnProperty('order_hex')) {
       this.$store.commit('triggerLoadingState');
       this.$store.dispatch(CREATE_NEW_ORDER);
     }
-    $(this.paymentOptionsModalId).modal();
   },
   methods: {
     checkoutShoppingCart() {
@@ -37,19 +36,21 @@ export default {
         return;
       }
 
-      $(this.paymentOptionsModalId).modal('open');
+      $(this.paymentOptionsModalId).modal().modal('open');
     },
     checkoutWithPaypal() {
-      const createPaymentEndpoint = `https://vitumob.xyz/payments/paypal/create/${this.order.order_hex}`;
+      const orderId = this.order.order_hex;
+      const createPaymentEndpoint = `https://vitumob.xyz/payments/paypal/create/${orderId}`;
+
       $.ajax({
         url: createPaymentEndpoint,
         method: 'POST',
         headers: {
           Authorization: this.PayPalToken.access_token,
         },
-      }).done(createdPayment => {
-        const checkoutApproval = createdPayment.links.filter(link => link.method === 'REDIRECT')[0];
-        const options = [checkoutApproval.href, '_blank', this.inAppBrowserOptions];
+      }).done(({ links }) => {
+        const [orderPaymentApproval] = links.filter(link => link.method === 'REDIRECT');
+        const options = [orderPaymentApproval.href, '_blank', this.inAppBrowserOptions];
         const browser = cordova.ThemeableBrowser.open(...options);
         browser.addEventListener('loadstop', event => {
           if (event.url.indexOf('approved') > -1) {
@@ -57,13 +58,16 @@ export default {
               code: 'document.body.innerText',
             };
             browser.executeScript(getPaymentDetails, paymentDetailsJSONAsText => {
-              const paymentDetails = $.parseJSON(paymentDetailsJSONAsText);
-              this.$store.commit('setPaymentDetails', paymentDetails);
               $(this.paymentOptionsModalId).modal('close');
+              this.$store.commit('setPaymentDetails', JSON.parse(paymentDetailsJSONAsText));
               browser.close();
-              Materialize.toast('Payment completed successfully!', 2000, '', () => {
-                this.$router.push({ name: 'userLocation' });
-              });
+
+              if (!this.user.displayName) {
+                this.$router.push({ name: 'updateUserInfo' });
+                return;
+              }
+
+              this.$router.push({ name: 'userLocation' });
             });
           }
 
@@ -71,11 +75,12 @@ export default {
             browser.close();
           }
         });
+      }).catch(error => {
+        console.error(error);
       });
     },
     checkoutWithMpesa() {
-      const options = $('#mpesa-instructions').modal();
-      options.modal('open');
+      $('#mpesa-instructions').modal().modal('open');
     },
   },
 };

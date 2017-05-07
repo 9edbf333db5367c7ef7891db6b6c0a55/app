@@ -23,6 +23,7 @@ export default {
   },
   computed: mapState({
     order: 'order',
+    payment: 'payment',
     loading: 'loading',
   }),
   methods: {
@@ -34,7 +35,7 @@ export default {
         .then(() => {
           const { displayName, email, emailVerified, photoURL } = user;
           const userCredentials = {
-            uuid: device.uuid,
+            uuid: typeof device !== 'undefined' ? device.uuid : navigator.productSub,
             phoneNumber: this.auth.phoneNumber,
             displayName, email, emailVerified, photoURL,
           };
@@ -46,13 +47,14 @@ export default {
 
             transaction.then(() => {
               this.$store.commit('triggerLoadingState');
-              if (!user.emailVerified) {
-                user.sendEmailVerification();
+              window.localStorage.setItem('vitumobUser', JSON.stringify(user));
+
+              if (!user.emailVerified) user.sendEmailVerification();
+              if (this.order.id && this.payment) {
+                this.$router.push({ name: 'userLocation' });
+                return;
               }
 
-              if (this.order.id) {
-                this.$router.push({ name: 'shoppingCart' });
-              }
               this.$router.push({ name: 'home' });
             });
           });

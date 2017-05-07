@@ -4,7 +4,7 @@ block content
     .navbar-fixed
         nav.blue
             .nav-wrapper
-                router-link(to="/user/location").brand-logo.bold.center
+                router-link(to="/").brand-logo.bold.center
                     img(src="images/vm-logo_hsvchn.png")
                 ul#nav-mobile.left
                     li.nav-item
@@ -17,7 +17,7 @@ block content
                             i.material-icons.md-36.text-blue-grey shopping_cart        
     
     ul#side-menu.side-nav.fixed.orange.darken-4
-        li.menu-item(v-if="user.email")
+        li.menu-item(v-show="user.email")
             .userView(v-bind:id="user.localId")
                 .background
                     img(src="./images/cat.jpeg")
@@ -31,16 +31,19 @@ block content
                 
                 a(href="javascript:void(0)")
                     span.white-text.email {{ user.email }}
-
         
         li.menu-item(v-show="user.email")
-            a.grey-text.text-lighten-3(href="javascript:void(0)")
-                i.material-icons.grey-text.text-lighten-3 shopping_cart 
-                | Your Orders
+            //- a.grey-text.text-lighten-3(href="javascript:void(0)")
+            //-     i.material-icons.grey-text.text-lighten-3 shopping_cart 
+            //-     | Your Orders
 
-            a.grey-text.text-lighten-3(href="javascript:void(0)")
-                i.material-icons.grey-text.text-lighten-3 location_on 
-                | Your Location
+            //- a.grey-text.text-lighten-3(href="javascript:void(0)")
+            //-     i.material-icons.grey-text.text-lighten-3 location_on 
+            //-     | Your Location
+            
+            a.grey-text.text-lighten-3(v-on:click="signOutUser")
+                i.material-icons.grey-text.text-lighten-3 exit_to_app
+                | Sign Out
         
         li.menu-item(v-show="!user.email")
             router-link.grey-text.text-lighten-3(to="/user/signin")
