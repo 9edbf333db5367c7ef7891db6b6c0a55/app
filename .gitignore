@@ -1,5 +1,8 @@
 # Created by https://www.gitignore.io/api/node,laravel,bower,justcode,linux,osx,jetbrains,sublimetext,vim,xcode
 
+### Custom
+docs
+
 ### Bower ###
 bower_components
 .bower-cache

@@ -40,10 +40,8 @@ export default {
           this.$store.commit('triggerLoadingState');
           this.$store.commit('setUser', user);
 
-          if (user.displayName) {
-            this.redirectBackToShoppingCart();
-          }
-          this.$router.push({ name: 'updateUserInfo' });
+          window.localStorage.setItem('vitumobUser', JSON.stringify(user));
+          this.redirectBackToShoppingCart();
         })
         .catch(signInError => {
           if (signInError.code === 'auth/wrong-password') {
@@ -62,10 +60,8 @@ export default {
                 this.$store.commit('setUser', user);
                 this.$store.commit('triggerLoadingState');
 
-                if (user.displayName) {
-                  this.redirectBackToShoppingCart();
-                }
-                this.$router.push({ name: 'updateUserInfo' });
+                window.localStorage.setItem('vitumobUser', JSON.stringify(user));
+                this.redirectBackToShoppingCart();
               })
               .catch(signUpError => {
                 if (signUpError.code === 'auth/weak-password') {

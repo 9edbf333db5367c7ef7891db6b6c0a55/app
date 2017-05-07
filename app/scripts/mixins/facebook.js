@@ -29,6 +29,8 @@ export default {
             .then(user => {
               this.$store.commit('setUser', user);
               this.$store.commit('triggerLoadingState');
+
+              window.localStorage.setItem('vitumobUser', JSON.stringify(user));
               if (this.redirectBackToShoppingCart) this.redirectBackToShoppingCart();
             })
             .catch(error => {

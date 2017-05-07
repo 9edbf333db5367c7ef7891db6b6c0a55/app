@@ -36,6 +36,23 @@ export default {
       computed: mapState({
         user: state => state.user,
       }),
+      created() {
+        const signedInUserCredentials = window.localStorage.getItem('vitumobUser');
+        if (signedInUserCredentials && !this.user.email) {
+          const user = firebase.auth().currentUser;
+          this.$store.commit('setUser', (user || JSON.parse(signedInUserCredentials)));
+        }
+      },
+      methods: {
+        signOutUser() {
+          $('.button-collapse').sideNav('hide');
+
+          firebase.auth().signOut().then(() => {
+            window.localStorage.removeItem('vitumobUser');
+            this.$store.commit('setUser', {});
+          });
+        },
+      },
     });
 
     firebase.initializeApp(firebaseConfig);
