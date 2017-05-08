@@ -30,7 +30,7 @@ export default {
         return {
           facebook,
           inAppBrowserOptions,
-          redirectUrl: 'https://vitumob.xyz',
+          redirectUrl: 'https://vitumob-xyz.appspot.com/',
         };
       },
       computed: mapState({

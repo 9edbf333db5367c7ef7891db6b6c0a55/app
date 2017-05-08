@@ -11,7 +11,7 @@ export default {
       },
       locationOptions: [],
       searchingForLocation: false,
-      googleMapsApiKey: 'AIzaSyAfMOwkBtFv53g76GJ-d4HugBFH_vym8s4',
+      googleMapsApiKey: 'AIzaSyBTDmU-TvOA6Hb6lJap1-ssYMPc8revfkA',
       apiURL: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
     };
   },
@@ -37,14 +37,14 @@ export default {
       console.log(deliveryLocation);
 
       this.$store.commit('setDeliveryLocation', deliveryLocation);
-      $.post(`https://vitumob.xyz/cart/${this.order.order_hex}/location`, {
+      $.post(`https://vitumob-xyz.appspot.com/cart/${this.order.order_hex}/location`, {
         delivery_location: JSON.stringify(deliveryLocation),
         home_area: this.location.homeArea,
       }).done(response => {
         console.log(response);
         this.$router.push({ name: 'checkedOut' });
       }).catch(error => {
-        throw error;
+        console.error(error);
       });
     },
     searchForLocation() {

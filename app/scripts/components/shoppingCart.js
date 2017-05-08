@@ -39,14 +39,14 @@ export default {
       $(this.paymentOptionsModalId).modal().modal('open');
     },
     checkoutWithPaypal() {
-      const orderId = this.order.order_hex;
-      const createPaymentEndpoint = `https://vitumob.xyz/payments/paypal/create/${orderId}`;
+      const { order_hex: orderId } = this.order;
+      const { access_token: PayPalAccessToken } = this.PayPalToken;
 
       $.ajax({
-        url: createPaymentEndpoint,
+        url: `https://vitumob-xyz.appspot.com/payments/paypal/create/${orderId}`,
         method: 'POST',
         headers: {
-          Authorization: this.PayPalToken.access_token,
+          Authorization: PayPalAccessToken,
         },
       }).done(({ links }) => {
         const [orderPaymentApproval] = links.filter(link => link.method === 'REDIRECT');

@@ -1,3 +1,3 @@
 export default {
-  redirectUrl: 'https://vitumob.xyz',
+  redirectUrl: 'https://vitumob-xyz.appspot.com/',
 };

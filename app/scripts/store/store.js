@@ -68,7 +68,7 @@ export default new Vuex.Store({
 
       const orderData = JSON.stringify({ order: JSON.stringify(order) });
       const createOrderRequest = $.ajax({
-        url: 'https://vitumob.xyz/order',
+        url: 'https://vitumob-xyz.appspot.com/order',
         type: 'POST',
         dataType: 'json',
         data: orderData,
@@ -100,7 +100,7 @@ export default new Vuex.Store({
       });
     },
     [GET_EXCHANGE_RATES]({ commit }) {
-      $.get('https://vitumob.xyz/exchange/rates')
+      $.get('https://vitumob-xyz.appspot.com/exchange/rates')
         .done((response) => {
           const rates = response.rates.reduce((obj, curr) => {
             obj[curr.code] = curr.rate;
@@ -110,7 +110,7 @@ export default new Vuex.Store({
         });
     },
     [GET_PAYPAL_TOKEN]({ commit }) {
-      $.get('https://vitumob.xyz/payments/paypal/token').done(tokenResponse => {
+      $.get('https://vitumob-xyz.appspot.com/payments/paypal/token').done(tokenResponse => {
         commit('setPayPalToken', tokenResponse);
       });
     },
