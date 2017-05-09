@@ -41,8 +41,8 @@ export default {
           };
 
           const ref = firebase.database().ref('users/' + user.uid);
-          ref.once('value').then((snapshot) => {
-            const transaction = snapshot.exists() ?
+          ref.once('value').then(userData => {
+            const transaction = userData.exists() ?
               ref.update(userCredentials) : ref.set(userCredentials);
 
             transaction.then(() => {

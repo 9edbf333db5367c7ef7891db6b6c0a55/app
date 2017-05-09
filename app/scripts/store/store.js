@@ -34,6 +34,8 @@ export default new Vuex.Store({
     },
     setPaymentDetails(state, paymentDetails) {
       state.payment = paymentDetails;
+      state.shoppingCart = [];
+      delete state.PayPalToken;
     },
     setDeliveryLocation(state, deliveryLocation) {
       state.deliveryLocation = deliveryLocation;
