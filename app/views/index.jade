@@ -8,7 +8,7 @@ block content
                     img(src="images/vm-logo_hsvchn.png")
                 ul#nav-mobile.left
                     li.nav-item
-                        a.button-collapse(href="javascript:void(0)" data-activates="side-menu")
+                        a.button-collapse.show-on-large(href="javascript:void(0)" data-activates="side-menu")
                             i.material-icons.md-36.text-blue-grey.darken-4 menu
 
                 ul#nav-mobile.right
@@ -16,7 +16,7 @@ block content
                         router-link(to="/cart")
                             i.material-icons.md-36.text-blue-grey shopping_cart        
     
-    ul#side-menu.side-nav.fixed.orange.darken-4
+    ul#side-menu.side-nav.right.orange.darken-4
         li.menu-item(v-show="user.email")
             .userView(v-bind:id="user.localId")
                 .background

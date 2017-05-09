@@ -5,11 +5,11 @@ html(lang="en").grey.lighten-4
 
     body.grey.lighten-4
         #application(v-cloak)
-            // Add your site or app content here
             block content
-            
-            // router outlet
-            router-view
+      
+            .row.root
+                .col.s12.m6.push-m3.l4.push-l4
+                    router-view
 
         include ../components/home
         include ../components/cart
