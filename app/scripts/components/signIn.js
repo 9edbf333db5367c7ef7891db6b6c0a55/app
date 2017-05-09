@@ -15,7 +15,7 @@ export default {
           invalid: false,
         },
         password: {
-          regexp: /^\w{6,}$/,
+          regexp: /^[\w\W\s\S]{6,}$/,
           invalid: false,
           weak: false,
         },
