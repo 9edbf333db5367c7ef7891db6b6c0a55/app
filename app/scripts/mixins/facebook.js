@@ -1,5 +1,5 @@
 import querystring from 'querystring';
-
+import { SYNC_USER_TO_DATASTORE, SYNC_USER_LOCALLY_AND_FIREBASE } from '../store/types';
 
 export default {
   methods: {
@@ -20,18 +20,36 @@ export default {
       browser.addEventListener('loadstop', event => {
         if (event.url.indexOf('access_token') > -1) {
           const params = querystring.parse(event.url.replace('?#', '?').split('?')[1]);
-          console.log('ACCESS_TOKEN', params.access_token);
 
           // Build Firebase credential with the Facebook access token.
-          const credential = firebase.auth.FacebookAuthProvider.credential(params.access_token);
-          firebase.auth()
-            .signInWithCredential(credential)
+          const { auth } = firebase;
+          const credential = auth.FacebookAuthProvider.credential(params.access_token);
+          auth().signInWithCredential(credential)
             .then(user => {
-              this.$store.commit('setUser', user);
-              this.$store.commit('triggerLoadingState');
+              const {
+                uid: id,
+                displayName: name,
+                email,
+                email_verified,
+                photoURL: profile_photo,
+                providerData: [{ providerId: method }],
+              } = user;
 
-              window.localStorage.setItem('vitumobUser', JSON.stringify(user));
-              if (this.redirectBackToShoppingCart) this.redirectBackToShoppingCart();
+              const userDataToSync = {
+                id, name, email, email_verified, profile_photo, method,
+                access_token: params.access_token,
+              };
+
+              if (device && device.uuid) {
+                userDataToSync.device_uuid = device.uuid;
+              }
+
+              return this.$store.dispatch(SYNC_USER_TO_DATASTORE, userDataToSync).always(
+                this.$store.dispatch(SYNC_USER_LOCALLY_AND_FIREBASE, {
+                  user: userDataToSync,
+                  redirect: this.redirectBackToShoppingCart,
+                })
+              );
             })
             .catch(error => {
               this.errorMessage = 'Something went wrong! Maybe it\'s us! Maybe it\'s you';

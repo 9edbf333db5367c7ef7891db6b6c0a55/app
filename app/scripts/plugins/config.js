@@ -3,7 +3,7 @@ import objectValues from 'object.values';
 import facebook from '../config/facebook';
 import firebaseConfig from '../config/firebase';
 
-
+if (!Object.values) objectValues.shim();
 export default {
   install(Vue) {
     $.support.cors = true;
@@ -21,10 +21,6 @@ export default {
       },
     };
 
-    if (!Object.values) {
-      objectValues.shim();
-    }
-
     Vue.mixin({
       data() {
         return {
@@ -41,6 +37,7 @@ export default {
         if (signedInUserCredentials && !this.user.email) {
           const user = firebase.auth().currentUser;
           this.$store.commit('setUser', (user || JSON.parse(signedInUserCredentials)));
+          console.log(user, JSON.parse(signedInUserCredentials));
         }
       },
       methods: {
@@ -48,8 +45,8 @@ export default {
           $('.button-collapse').sideNav('hide');
 
           firebase.auth().signOut().then(() => {
-            window.localStorage.removeItem('vitumobUser');
             this.$store.commit('setUser', {});
+            window.localStorage.removeItem('vitumobUser');
           });
         },
       },

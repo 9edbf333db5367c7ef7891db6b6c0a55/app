@@ -1,12 +1,20 @@
 script(type="text/x-template" id="homepage")
     .row.valign-wrapper
         .col.s12.m12
-            .card.yellow.accent-3
-                .card-content
-                    span.card-title: h4 Amazon
+            .card.shopping-site-option
+                .card-image
+                    img.activator(src="./images/amazon.png")
+                    a.btn-large.btn-floating.halfway-fab.waves-effect.waves-light.deep-orange
+                        i.material-icons(
+                            v-on:click.prevent.stop="openInAppBrowser"
+                            href="https://amazon.com"
+                            data-cart-url='https://www.amazon.com/gp/aw/c/ref=navm_hdr_cart'
+                            data-merchant='amazon'
+                        ) add
+                //- .card-content
+                //-     span.card-title.activator: h5 Amazon.com
+                .card-reveal
+                    span.card-title
+                        h4 Amazon.com
+                        i.material-icons.right close
                     p Earth's biggest online selection of books, magazines, music, DVDs, videos, electronics, computers, software, apparel &amp; accessories, shoes, jewelry ...
-                .card-action
-                    a.deep-orange-text(v-on:click.prevent.stop="openInAppBrowser" 
-                    href="https://amazon.com" 
-                    data-cart-url='https://www.amazon.com/gp/aw/c/ref=navm_hdr_cart' 
-                    data-merchant='amazon') Shop from here

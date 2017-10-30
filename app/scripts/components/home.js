@@ -2,27 +2,24 @@ import { mapState } from 'vuex';
 import { GET_EXCHANGE_RATES } from '../store/types';
 import merchantScrapers from '../scrapers';
 
-
 export default {
   template: '#homepage',
-  data() {
-    return {
-      customInAppBrowserOptions: {
-        closeButton: {
-          image: 'cancel',
-          imagePressed: 'cancel',
-          event: 'closePressed',
-        },
-        customButtons: [{
-          image: 'vmlogo',
-          imagePressed: 'vmlogo',
-          align: 'right',
-          event: 'exportShoppingCartButtonPressed',
-        }],
-        backButtonCanClose: true,
+  data: () => ({
+    customInAppBrowserOptions: {
+      closeButton: {
+        image: 'cancel',
+        imagePressed: 'cancel',
+        event: 'closePressed',
       },
-    };
-  },
+      customButtons: [{
+        image: 'checkout',
+        imagePressed: 'checkout_pressed',
+        align: 'right',
+        event: 'exportShoppingCartFromMerchant',
+      }],
+      backButtonCanClose: true,
+    },
+  }),
   computed: mapState({
     rates: state => state.rates,
   }),
@@ -48,10 +45,10 @@ export default {
       const browser = cordova.ThemeableBrowser.open(...[
         merchantUrl,
         '_blank',
-        Object.assign(this.inAppBrowserOptions, this.customInAppBrowserOptions),
+        Object.assign({}, this.inAppBrowserOptions, this.customInAppBrowserOptions),
       ]);
 
-      browser.addEventListener('exportShoppingCartButtonPressed', () => {
+      browser.addEventListener('exportShoppingCartFromMerchant', () => {
         const redirectToCartScript = {
           code: `window.location='${merchantCartUrl}'`,
         };
@@ -70,10 +67,10 @@ export default {
                 if (items.length > 0) {
                   const order = {
                     merchant: merchantName,
-                    uuid: device.uuid,
                     date: new Date().toLocaleString(),
                     items,
                   };
+
                   this.$store.commit('setNewOrder', order);
                   this.$router.push({ name: 'shoppingCart' });
                   browser.close();
@@ -82,7 +79,6 @@ export default {
             });
           }
         });
-
         browser.executeScript(redirectToCartScript);
       });
     },

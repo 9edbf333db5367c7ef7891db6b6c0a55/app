@@ -9,7 +9,6 @@ import UpdateUserInfo from './components/updateUserInfo';
 import UserLocation from './components/userLocation';
 import checkedOut from './components/checkedOut';
 
-
 const routes = [{
   path: '/',
   name: 'home',

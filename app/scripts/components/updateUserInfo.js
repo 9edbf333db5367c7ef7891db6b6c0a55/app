@@ -1,6 +1,6 @@
 import { mapState } from 'vuex';
 import validationMethod from '../mixins/validationMethod';
-
+import { SYNC_USER_TO_DATASTORE } from '../store/types';
 
 export default {
   template: '#update-user-info',
@@ -33,28 +33,35 @@ export default {
       const user = firebase.auth().currentUser;
       user.updateProfile({ displayName: this.auth.name })
         .then(() => {
-          const { displayName, email, emailVerified, photoURL } = user;
+          const { uid: id, displayName: name, email_verified: emailVerified, email } = user;
           const userCredentials = {
-            uuid: typeof device !== 'undefined' ? device.uuid : navigator.productSub,
-            phoneNumber: this.auth.phoneNumber,
-            displayName, email, emailVerified, photoURL,
+            id,
+            name,
+            device_uuid: typeof device !== 'undefined' ? device.uuid : navigator.productSub,
+            phone_number: this.auth.phoneNumber,
           };
 
-          const ref = firebase.database().ref('users/' + user.uid);
-          ref.once('value').then(userData => {
-            const transaction = userData.exists() ?
-              ref.update(userCredentials) : ref.set(userCredentials);
+          const ref = firebase.database().ref(`users/${user.uid}`);
+          return ref.update(userCredentials).then(() => {
+            const updatedUser = Object.assign({}, user, userCredentials);
+            if (!user.emailVerified) {
+              user.sendEmailVerification();
+            }
 
-            transaction.then(() => {
-              this.$store.commit('triggerLoadingState');
-              window.localStorage.setItem('vitumobUser', JSON.stringify(user));
+            this.$store.commit('setUser', updatedUser);
+            this.$store.commit('triggerLoadingState');
 
-              if (!user.emailVerified) user.sendEmailVerification();
-              if (this.order.id && this.payment) {
+            return this.$store.dispatch(SYNC_USER_TO_DATASTORE, userCredentials).done(() => {
+              // eslint-disable-next-line max-len
+              const defaultUserCredentials = { email, emailVerified, phoneNumber: this.auth.phoneNumber };
+              window.localStorage.setItem('vitumobUser', JSON.stringify(
+                Object.assign(defaultUserCredentials, userCredentials)
+              ));
+
+              if (this.order.order_id && this.payment) {
                 this.$router.push({ name: 'userLocation' });
                 return;
               }
-
               this.$router.push({ name: 'home' });
             });
           });

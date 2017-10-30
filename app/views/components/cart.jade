@@ -4,20 +4,23 @@ script(type="text/x-template" id="shopping-cart")
 
         .col.s12.m12(v-if="cart.length > 0 && !loading")
             h5.center-align.grey-text.lighten-4 Your Shopping Cart
-            
-            .card.panel.white.z-depth-1(v-for="item in cart" v-if="(typeof item === 'object' && 'image' in item)")
-                .row.valign-wrapper
-                    .col.s3
-                        img.responsive-img(v-bind:src="item.image")
-                    .col.s7
-                        span.black-text
-                            h6 {{ item.name }}
-                            span.blue-text Quantity: {{ item.quantity }}
-                    
-                    .col.s2
-                        span.white-text.badge.blue {{ item.price }}
-                        span.white-text.badge.orange.accent-4 {{ item.localPrice }}
-            
+
+            .card.horizontal(
+                v-for="item in cart" 
+                v-if="(typeof item === 'object' && 'image' in item)"
+            )
+                .card-image
+                    img(v-bind:src="item.image" v-bind:alt="item.name")
+                    a.btn-floating.halfway-fab.waves-effect.waves-light.blue.darken-2.white-text
+                        span.quantity.text-center {{ item.quantity }}
+                .card-stacked
+                    .card-content
+                        span: h4 {{ item.name }}
+
+                    .card-action
+                        span.blue-text {{ item.price }} USD
+                        span.orange-text.accent-4 {{ item.localPrice }} KES
+
             .card.panel.white.z-depth-1(v-if="('total_cost' in order)")
                 table.striped.order-total
                     tbody
@@ -73,14 +76,17 @@ script(type="text/x-template" id="shopping-cart")
                                     br
                                     | ORDER WITH 
                                     span.red-text.text-darken-2 M-PESA
-                            li.collection-item: h6 Go to M-PESA menu on your phone
+                            li.collection-item: h6: b Go to M-PESA menu on your phone
                             li.collection-item: h6 Choose <b>"Pay Bill"</b> from the M-PESA menu
                             li.collection-item: h6 Enter the VituMob Business Number: <b>823823</b>
                             li.collection-item: h6 Enter your <b>Order No.</b> as the account number: <b>{{ order.order_id }}</b>
-                            li.collection-item: h6 Enter the Price as the amount: <b>{{ order.overall_cost_local }}</b>
+                            li.collection-item: h6 Enter the <b>price</b> as the <b>amount: {{ order.overall_cost_local }}</b>
                             li.collection-item: h6 Enter your secret <b>PIN</b> and press <b>OK</b>
+                            li.collection-item: h6 Give us a few seconds to recieve a notification of your payment
+                            li.collection-item: h6 This pop up will automatically close and take you to the next final step.
+                            
             .modal-footer
-                a.btn-flat.align-center.white-text.orange.darken-2.z-depth-1.modal-action.modal-close.waves-effect(href="javascript:void(0)") OKAY!
+                a.btn-flat.align-center.white-text.blue.darken-3.z-depth-1.modal-action.modal-close.waves-effect(href="javascript:void(0)") OKAY!
 
         .col.s12.m12.empty-shopping-cart(v-if="cart.length == 0 && !loading")
             .row

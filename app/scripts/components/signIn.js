@@ -1,7 +1,7 @@
 import { mapState } from 'vuex';
 import facebook from '../mixins/facebook';
 import validationMethod from '../mixins/validationMethod';
-
+import { SYNC_USER_TO_DATASTORE, SYNC_USER_LOCALLY_AND_FIREBASE } from '../store/types';
 
 export default {
   template: '#sign-in',
@@ -29,17 +29,17 @@ export default {
   }),
   mounted() {
     $('.button-collapse').sideNav('hide');
+    this.$store.commit('triggerLoadingState', false);
   },
   methods: {
     loginOrSignUpUser() {
       this.$store.commit('triggerLoadingState');
       const credentials = [this.auth.email, this.auth.password];
-      firebase.auth()
-        .signInWithEmailAndPassword(...credentials)
-        .then(user => {
-          this.$store.commit('triggerLoadingState');
-          this.$store.commit('setUser', user);
+      const firebaseAuth = firebase.auth();
 
+      firebaseAuth.signInWithEmailAndPassword(...credentials)
+        .then(user => {
+          this.$store.commit('setUser', user);
           window.localStorage.setItem('vitumobUser', JSON.stringify(user));
           this.redirectBackToShoppingCart();
         })
@@ -51,30 +51,38 @@ export default {
           }
 
           if (signInError.code === 'auth/user-not-found') {
-            firebase.auth()
-              .createUserWithEmailAndPassword(...credentials)
-              .then(user => { // {email, emailVerified, uid}
-                user.sendEmailVerification();
-
+            firebaseAuth.createUserWithEmailAndPassword(...credentials)
+              .then(user => {
+                const { uid: id, emailVerified: email_verified, email } = user;
+                const userDataToSync = { id, email, email_verified };
                 this.errorMessage = undefined;
-                this.$store.commit('setUser', user);
-                this.$store.commit('triggerLoadingState');
 
-                window.localStorage.setItem('vitumobUser', JSON.stringify(user));
-                this.redirectBackToShoppingCart();
+                user.sendEmailVerification();
+                this.$store.dispatch(SYNC_USER_TO_DATASTORE, userDataToSync).done(
+                  this.$store.dispatch(SYNC_USER_LOCALLY_AND_FIREBASE, {
+                    user: userDataToSync,
+                    redirect: this.redirectBackToShoppingCart,
+                  })
+                );
               })
               .catch(signUpError => {
+                console.error(signUpError.message);
                 if (signUpError.code === 'auth/weak-password') {
                   this.auth.password = '';
                   this.validation.password.weak = true;
                   this.errorMessage = 'Detected weak password. Please enter a new strong one.';
                   this.$store.commit('triggerLoadingState');
+                  return;
                 }
+
+                this.errorMessage = 'Something went wrong. Please try again one more time!';
+                this.$store.commit('triggerLoadingState');
               });
           }
         });
     },
     redirectBackToShoppingCart() {
+      this.$store.commit('triggerLoadingState');
       if (Object.keys(this.shoppingCart).length) {
         this.$router.push({ name: 'shoppingCart' });
         return;

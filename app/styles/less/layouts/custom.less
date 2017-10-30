@@ -9,7 +9,10 @@
 html,
 body {
     font-family: 'Telex', Arial, Helvetica, sans-serif;
-    background-color: #e0e0e0;
+    // background-color: #e0e0e0;
+    background-image: url('../images/background.png');
+    background-size: 100%;
+    background-repeat: repeat;
 }
 
 [v-cloak] {
@@ -40,6 +43,29 @@ i.prefix{
     }
 }
 
+.vm-badge{
+    padding: 2px 5px;
+}
+
+span.badge{
+    margin-left: 0;
+    float: none;
+    clear: both;
+}
+
+.card.panel > .row{
+    padding-bottom: 10px;
+}
+
+.card.panel > .row .row{
+    margin-bottom: 0;
+}
+
+.badges .col{
+    padding-left: 0;
+    margin-left: 0;
+}
+
 nav{
     .button-collapse{
         margin: 0 0;
@@ -47,6 +73,7 @@ nav{
 }
 
 #side-menu{
+    z-index: 1500;
     a{
         span{
             font-weight: bolder;
@@ -64,16 +91,80 @@ nav{
 }
 
 .row.root > .col{
-    padding: 0 .45em;
+    padding: 0 .25em;
 }
 
 .card {
-    border-radius: 5px;
+    border-radius: 6px;
     .card-title {
         font-weight: normal;
-        h4 {
+        h4, h5 {
             padding: 0;
             margin: 0;
+            font-weight: 500;
+        }
+    }
+    .card-image{
+        overflow-y: hidden;
+        position: static;
+        img {
+            height: 100%;
+            border-radius: 6px;
+            z-index: 100;
+        }
+        a.btn-large{
+            bottom: none;
+            top: 225px;
+            right: 25px;
+            z-index: 150;
+        }
+    }
+    .card-content{
+        padding: 5px 24px;
+        border-top: 1px solid lighten(#aaaaaa, 20%);
+    }
+    .card-reveal{
+        z-index: 155;
+        padding: 20px 24px 10px;
+    }
+    &.shopping-site-option{
+        .card-image{
+            height: 300px;
+        }
+    }
+    &.horizontal{
+        .card-image{
+            width: 30%;
+            padding-left: 10px;
+            overflow-y: inherit;
+            img{
+                max-width: none;
+            }
+            .btn-floating{
+                right: -10px;
+                bottom: 35px;
+                z-index: 150;
+                span{
+                    text-align: center;
+                    padding: 15px;
+                }
+            }
+        }
+        .card-stacked{
+            background: white;
+            opacity: 0.85;
+            z-index: 145;
+            .card-content{
+                h4{
+                    font-size: 1.2em;
+                }
+            }
+            .card-action{
+                span{
+                    font-weight: bolder;
+                    padding-left: 15px;
+                }
+            }
         }
     }
 }

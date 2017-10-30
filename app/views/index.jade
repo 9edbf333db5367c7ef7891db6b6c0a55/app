@@ -4,8 +4,7 @@ block content
     .navbar-fixed
         nav.blue
             .nav-wrapper
-                router-link(to="/").brand-logo.bold.center
-                    img(src="images/vm-logo_hsvchn.png")
+                router-link(to="/").brand-logo.bold.center: img(src="images/vm-logo_hsvchn.png")
                 ul#nav-mobile.left
                     li.nav-item
                         a.button-collapse.show-on-large(href="javascript:void(0)" data-activates="side-menu")
@@ -18,18 +17,17 @@ block content
     
     ul#side-menu.side-nav.right.orange.darken-4
         li.menu-item(v-show="user.email")
-            .userView(v-bind:id="user.localId")
-                .background
-                    img(src="./images/cat.jpeg")
+            .userView(v-bind:id="user.id")
+                .background: img(src="./images/cat.jpeg")
                 
                 a(href="javascript:void(0)")
                     img.circle(v-if="!user.photoURL" src="./images/cat-profile-pic.jpeg")
-                    img.circle(v-if="user.photoURL" v-bind:src="user.photoURL")
+                    img.circle(v-if="user.photoURL" v-bind:src="user.profile_photo")
                 
-                a(v-if="user.displayName" href="javascript:void(0)")
+                a(v-if="user.name" href="javascript:void(0)")
                     span.white-text.name {{ user.displayName }}
                 
-                a(href="javascript:void(0)")
+                a(v-if="user.email" href="javascript:void(0)")
                     span.white-text.email {{ user.email }}
         
         li.menu-item(v-show="user.email")

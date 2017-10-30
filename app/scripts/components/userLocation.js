@@ -1,7 +1,6 @@
 import { mapState } from 'vuex';
 import throttle from 'lodash.throttle';
 
-
 export default {
   template: '#user-location',
   data() {
@@ -22,7 +21,9 @@ export default {
     loading: 'loading',
   }),
   mounted() {
-    if (this.payment) Materialize.toast('Payment completed successfully!', 3000);
+    if (this.payment) {
+      Materialize.toast('Payment completed successfully!', 3000);
+    }
   },
   methods: {
     selectThisLocation(selectedPlaceId) {
@@ -30,7 +31,9 @@ export default {
       deliveryLocation = deliveryLocation.length ? deliveryLocation[0] : null;
 
       const {
-        geometry: { location: { lat: lat, lng: long } },
+        geometry: {
+          location: { lat, lng: long },
+        },
         id, place_id, name, vicinity,
       } = deliveryLocation;
       deliveryLocation = { id, place_id, name, vicinity, lat, long };
@@ -71,7 +74,6 @@ export default {
     },
     getPlacesFromGoogleMapsApi: throttle((resourceURL, scope) => {
       $.get(resourceURL).done(response => {
-        console.log(response);
         scope.locationOptions = response.results;
         scope.searchingForLocation = false;
       });
