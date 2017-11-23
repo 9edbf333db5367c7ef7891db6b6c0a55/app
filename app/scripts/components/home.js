@@ -4,26 +4,28 @@ import merchantScrapers from '../scrapers';
 
 export default {
   template: '#homepage',
-  data: () => ({
-    customInAppBrowserOptions: {
-      closeButton: {
-        image: 'cancel',
-        imagePressed: 'cancel',
-        event: 'closePressed',
+  data() {
+    return {
+      customInAppBrowserOptions: {
+        closeButton: {
+          image: 'cancel',
+          imagePressed: 'cancel',
+          event: 'closePressed',
+        },
+        customButtons: [{
+          image: 'checkout',
+          imagePressed: 'checkout_pressed',
+          align: 'right',
+          event: 'exportShoppingCartFromMerchant',
+        }],
+        backButtonCanClose: true,
       },
-      customButtons: [{
-        image: 'checkout',
-        imagePressed: 'checkout_pressed',
-        align: 'right',
-        event: 'exportShoppingCartFromMerchant',
-      }],
-      backButtonCanClose: true,
-    },
-  }),
+    };
+  },
   computed: mapState({
     rates: state => state.rates,
   }),
-  beforeMount() {
+  created() {
     if (!Object.keys(this.rates).length) {
       this.$store.dispatch(GET_EXCHANGE_RATES);
     }

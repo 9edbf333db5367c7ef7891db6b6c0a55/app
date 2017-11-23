@@ -26,23 +26,23 @@ script(type="text/x-template" id="shopping-cart")
                     tbody
                         tr.orange.accent-4.white-text
                             td: h6: b Sub Total
-                            td: h6: b {{ order.total_cost }}
+                            td: h6: b $ {{ order.total_cost }}
                             td: h6: b {{ order.total_cost_local }}
                         tr.blue.darken-1.white-text
                             td: h6 Customs &amp; Import Fees
-                            td: h6 {{ order.customs }}
+                            td: h6 $ {{ order.customs }}
                             td: h6 {{ order.customs_local }}
                         tr.blue.darken-2.white-text
                             td: h6 Shipping &amp; Handling
-                            td: h6 {{ order.shipping_cost }}
+                            td: h6 $ {{ order.shipping_cost }}
                             td: h6 {{ order.shipping_cost_local }}
                         tr.blue.darken-3(v-bind:class="{ 'white-text': order.vat !== 'FREE', 'blue-text text-darken-4': order.vat === 'FREE' }")
                             td: h6 VAT
-                            td: h6 {{ order.vat }}
+                            td: h6 $ {{ order.vat }}
                             td: h6 {{ order.vat_local }}
                         tr.blue.darken-4.white-text
                             td: h6: b Overall Cost
-                            td: h6: b {{ order.overall_cost }}
+                            td: h6: b $ {{ order.overall_cost }}
                             td: h6: b {{ order.overall_cost_local }}
 
             .checkout-button

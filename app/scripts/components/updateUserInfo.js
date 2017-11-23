@@ -28,7 +28,7 @@ export default {
   }),
   methods: {
     updateUserInfo() {
-      this.$store.commit('triggerLoadingState');
+      this.$store.commit('triggerLoadingState', true);
 
       const user = firebase.auth().currentUser;
       user.updateProfile({ displayName: this.auth.name })
@@ -49,19 +49,23 @@ export default {
             }
 
             this.$store.commit('setUser', updatedUser);
-            this.$store.commit('triggerLoadingState');
-
             return this.$store.dispatch(SYNC_USER_TO_DATASTORE, userCredentials).done(() => {
               // eslint-disable-next-line max-len
-              const defaultUserCredentials = { email, emailVerified, phoneNumber: this.auth.phoneNumber };
+              const defaultUserCredentials = {
+                email,
+                emailVerified,
+                phoneNumber: this.auth.phoneNumber,
+              };
               window.localStorage.setItem('vitumobUser', JSON.stringify(
                 Object.assign(defaultUserCredentials, userCredentials)
               ));
 
-              if (this.order.order_id && this.payment) {
+              if (this.order && this.order.order_id && this.payment) {
+                this.$store.commit('triggerLoadingState', false);
                 this.$router.push({ name: 'userLocation' });
                 return;
               }
+
               this.$router.push({ name: 'home' });
             });
           });

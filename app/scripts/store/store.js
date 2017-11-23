@@ -139,7 +139,6 @@ export default new Vuex.Store({
 
         console.log(orderCreatedWithLocalCosts);
         commit('updateOrderDetails', orderCreatedWithLocalCosts);
-        commit('triggerLoadingState');
       });
     },
     [GET_EXCHANGE_RATES]({ commit }) {

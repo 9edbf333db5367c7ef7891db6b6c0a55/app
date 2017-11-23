@@ -27,13 +27,13 @@ export default {
           auth().signInWithCredential(credential)
             .then(user => {
               const {
-                uid: id,
-                displayName: name,
-                email,
-                email_verified,
-                photoURL: profile_photo,
-                providerData: [{ providerId: method }],
-              } = user;
+                    uid: id,
+                    displayName: name,
+                    email,
+                    email_verified,
+                    photoURL: profile_photo,
+                    providerData: [{ providerId: method }],
+                  } = user;
 
               const userDataToSync = {
                 id, name, email, email_verified, profile_photo, method,
@@ -56,6 +56,7 @@ export default {
               this.$store.commit('triggerLoadingState');
               console.log(error);
             });
+
           browser.close();
         }
       });
