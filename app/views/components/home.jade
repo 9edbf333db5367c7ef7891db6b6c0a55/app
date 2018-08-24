@@ -1,18 +1,17 @@
 script(type="text/x-template" id="homepage")
     .row.valign-wrapper
         .col.s12.m12
-            .card.shopping-site-option
+            .card.small.shopping-site-option
                 .card-image
-                    img.activator(src="./images/amazon.png")
+                    img(
+                        src="./images/amazon.png"                             v-on:click.prevent.stop="openInAppBrowser"
+                        href="https://amazon.com"
+                        data-cart-url='https://www.amazon.com/gp/aw/c/ref=navm_hdr_cart'
+                        data-merchant='amazon'
+                    )
                     a.btn-large.btn-floating.halfway-fab.waves-effect.waves-light.deep-orange
-                        i.material-icons(
-                            v-on:click.prevent.stop="openInAppBrowser"
-                            href="https://amazon.com"
-                            data-cart-url='https://www.amazon.com/gp/aw/c/ref=navm_hdr_cart'
-                            data-merchant='amazon'
-                        ) add
-                //- .card-content
-                //-     span.card-title.activator: h5 Amazon.com
+                        i.material-icons.activator info
+
                 .card-reveal
                     span.card-title
                         h4 Amazon.com

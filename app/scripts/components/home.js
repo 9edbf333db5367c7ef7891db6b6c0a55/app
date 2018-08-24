@@ -73,9 +73,9 @@ export default {
                     items,
                   };
 
+                  browser.close();
                   this.$store.commit('setNewOrder', order);
                   this.$router.push({ name: 'shoppingCart' });
-                  browser.close();
                 }
               });
             });

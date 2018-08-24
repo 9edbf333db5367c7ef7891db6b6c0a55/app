@@ -3,6 +3,14 @@ import { GET_ORDER_CALCULATIONS, GET_PAYPAL_TOKEN } from '../store/types';
 
 export default {
   template: '#shopping-cart',
+  filters: {
+    spaceTextWithSlashes(textString) {
+      return textString.replace('/', ' / ');
+    },
+    formatAmount(amount) {
+      return Number(amount).toLocaleString('en');
+    },
+  },
   data() {
     return {
       paymentOptionsModalId: '#payment-options',

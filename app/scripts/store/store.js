@@ -52,7 +52,7 @@ export default new Vuex.Store({
       state.user.deliveryLocation = deliveryLocation;
     },
     triggerLoadingState(state, bool) {
-      state.loading = (bool || !state.loading);
+      state.loading = bool !== undefined ? bool : !state.loading;
     },
   },
   actions: {

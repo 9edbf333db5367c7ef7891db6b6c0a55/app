@@ -18,10 +18,10 @@ block content
     ul#side-menu.side-nav.right.orange.darken-4
         li.menu-item(v-show="user.email")
             .userView(v-bind:id="user.id")
-                .background: img(src="./images/cat.jpeg")
+                .background: img(src="./images/profile-background.jpg")
                 
                 a(href="javascript:void(0)")
-                    img.circle(v-if="!user.photoURL" src="./images/cat-profile-pic.jpeg")
+                    img.circle(v-if="!user.photoURL" src="./images/profilepic-placeholder.jpg")
                     img.circle(v-if="user.photoURL" v-bind:src="user.profile_photo")
                 
                 a(v-if="user.name" href="javascript:void(0)")
