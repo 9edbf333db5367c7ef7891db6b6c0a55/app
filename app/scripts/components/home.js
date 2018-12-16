@@ -22,14 +22,14 @@ export default {
       },
     };
   },
-  computed: mapState({
-    rates: state => state.rates,
-  }),
   created() {
     if (!Object.keys(this.rates).length) {
       this.$store.dispatch(GET_EXCHANGE_RATES);
     }
   },
+  computed: mapState({
+    rates: state => state.rates,
+  }),
   methods: {
     openInAppBrowser(event) {
       const {
@@ -56,16 +56,26 @@ export default {
         };
         browser.addEventListener('loadstop', (e) => {
           if (e.url === merchantCartUrl) {
-            const getDOMScript = {
-              code: 'document.documentElement.innerHTML',
-            };
-            browser.executeScript(getDOMScript, ([documentHtml]) => {
+            $.get(e.url).done((theShoppingSiteHTML) => {
               const { [merchantName]: merchant } = merchantScrapers;
               const doc = document.implementation.createHTMLDocument('Amazon');
-              doc.documentElement.innerHTML = documentHtml;
+              doc.documentElement.innerHTML = theShoppingSiteHTML;
 
               $(doc).ready(() => {
                 const items = merchant.scrape(doc);
+                const someItemPricesAreInPounds = items.find(
+                  item => item.priceInPounds !== undefined
+                );
+
+                if (someItemPricesAreInPounds.length) {
+                  items.forEach(item => {
+                    if (item.priceInPounds) {
+                      item.price = item.price * this.rates.GBP;
+                    }
+                    return item;
+                  });
+                }
+
                 if (items.length > 0) {
                   const order = {
                     merchant: merchantName,
