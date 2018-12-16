@@ -34,22 +34,28 @@ export default {
       user.updateProfile({ displayName: this.auth.name })
         .then(() => {
           const { uid: id, displayName: name, email_verified: emailVerified, email } = user;
+
+          // Check if the phone number starts with 0 eg. 0711012345
+          if (/^0[0-9]{9,10}$/g.test(this.auth.phoneNumber)) {
+            // remove the 0, and append 254 => 254711012345
+            this.auth.phoneNumber = `254${String(this.auth.phoneNumber).substr(1)}`;
+          }
+
+          const deviceUUID = typeof device !== 'undefined' ? device.uuid : navigator.productSub;
           const userCredentials = {
             id,
             name,
-            device_uuid: typeof device !== 'undefined' ? device.uuid : navigator.productSub,
+            device_uuid: deviceUUID,
             phone_number: this.auth.phoneNumber,
           };
 
           const ref = firebase.database().ref(`users/${user.uid}`);
-          return ref.update(userCredentials).then(() => {
+          ref.update(userCredentials).then(() => {
             const updatedUser = Object.assign({}, user, userCredentials);
-            if (!user.emailVerified) {
-              user.sendEmailVerification();
-            }
+            if (!user.emailVerified) user.sendEmailVerification();
 
             this.$store.commit('setUser', updatedUser);
-            return this.$store.dispatch(SYNC_USER_TO_DATASTORE, userCredentials).done(() => {
+            this.$store.dispatch(SYNC_USER_TO_DATASTORE, userCredentials).done(() => {
               // eslint-disable-next-line max-len
               const defaultUserCredentials = {
                 email,
@@ -60,9 +66,18 @@ export default {
                 Object.assign(defaultUserCredentials, userCredentials)
               ));
 
-              if (this.order && this.order.order_id && this.payment) {
+              if (this.order && this.order.order_id) {
                 this.$store.commit('triggerLoadingState', false);
-                this.$router.push({ name: 'userLocation' });
+
+                // If the user had already made the payment,
+                // go get his/her delivery location
+                if (Object.keys(this.payment).length > 0) {
+                  this.$router.push({ name: 'userLocation' });
+                  return;
+                }
+
+                // If not return the user to the shopping cart
+                this.$router.push({ name: 'shoppingCart' });
                 return;
               }
 
