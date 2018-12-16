@@ -40,7 +40,7 @@ export default {
       console.log(deliveryLocation);
 
       this.$store.commit('setDeliveryLocation', deliveryLocation);
-      $.post(`https://vitumob-xyz.appspot.com/cart/${this.order.order_hex}/location`, {
+      $.post(`https://vitumob-prod.appspot.com/cart/${this.order.order_hex}/location`, {
         delivery_location: JSON.stringify(deliveryLocation),
         home_area: this.location.homeArea,
       }).done(response => {
