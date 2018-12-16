@@ -5,6 +5,7 @@ import {
   GET_PAYPAL_TOKEN,
   SYNC_USER_TO_DATASTORE,
   SYNC_USER_LOCALLY_AND_FIREBASE,
+  GET_MPESA_PUSH_API_TOKEN,
 } from './types';
 
 export default new Vuex.Store({
@@ -14,9 +15,10 @@ export default new Vuex.Store({
     order: {},
     scrapedOrder: {},
     rates: {},
-    PayPalToken: undefined,
+    PayPalToken: null,
+    MpesaAPIToken: null,
     payment: {},
-    deliveryLocation: undefined,
+    deliveryLocation: null,
     loading: false,
   },
   mutations: {
@@ -42,10 +44,13 @@ export default new Vuex.Store({
     setPayPalToken(state, tokenObject) {
       state.PayPalToken = tokenObject;
     },
+    setMpesaAPIToken(state, tokenObject) {
+      state.MpesaAPIToken = tokenObject;
+    },
     setPaymentDetails(state, paymentDetails) {
+      if (state.PayPalToken) delete state.PayPalToken;
+      if (paymentDetails.mpesa_code || state.PayPalToken) state.shoppingCart = [];
       state.payment = paymentDetails;
-      state.shoppingCart = [];
-      delete state.PayPalToken;
     },
     setDeliveryLocation(state, deliveryLocation) {
       state.deliveryLocation = deliveryLocation;
@@ -67,7 +72,7 @@ export default new Vuex.Store({
       });
     },
     [SYNC_USER_TO_DATASTORE]({ commit }, user) {
-      const endpoint = 'https://vitumob-xyz.appspot.com/user';
+      const endpoint = 'https://vitumob-prod.appspot.com/user';
       const isUpdate = 'phone_number' in user;
       const resourceUrl = isUpdate ? `${endpoint}/${user.id}` : endpoint;
       const HTTPMethod = isUpdate ? 'PUT' : 'POST';
@@ -110,7 +115,7 @@ export default new Vuex.Store({
 
       const orderData = JSON.stringify({ order: JSON.stringify(order) });
       const createOrderRequest = $.ajax({
-        url: 'https://vitumob-xyz.appspot.com/order',
+        url: 'https://vitumob-prod.appspot.com/order',
         type: 'POST',
         dataType: 'json',
         data: orderData,
@@ -142,7 +147,7 @@ export default new Vuex.Store({
       });
     },
     [GET_EXCHANGE_RATES]({ commit }) {
-      $.get('https://vitumob-xyz.appspot.com/exchange/rates')
+      $.get('https://vitumob-prod.appspot.com/exchange/rates')
         .done((response) => {
           const rates = response.rates.reduce((rate, curr) => {
             rate[curr.code] = curr.rate;
@@ -151,11 +156,29 @@ export default new Vuex.Store({
           commit('updateExchangeRates', rates);
         });
     },
-    [GET_PAYPAL_TOKEN]({ commit }) {
-      $.get('https://vitumob-xyz.appspot.com/payments/paypal/token')
-        .done(tokenResponse => {
-          commit('setPayPalToken', tokenResponse);
-        });
+    [GET_PAYPAL_TOKEN]({ commit, state }) {
+      if (!state.PayPalToken) {
+        return $.get('https://vitumob-prod.appspot.com/payments/paypal/token')
+          .done(tokenResponse => {
+            commit('setPayPalToken', tokenResponse);
+            return tokenResponse;
+          });
+      }
+
+      // eslint-disable-next-line new-cap
+      return $.Deferred().resolve(state.PayPalToken);
+    },
+    [GET_MPESA_PUSH_API_TOKEN]({ commit, state }) {
+      if (!state.MpesaAPIToken) {
+        return $.get('https://vitumob-prod.appspot.com/payments/mpesa/token')
+          .done(tokenResponse => {
+            commit('setMpesaAPIToken', tokenResponse);
+            return tokenResponse;
+          });
+      }
+
+      // eslint-disable-next-line new-cap
+      return $.Deferred().resolve(state.MpesaAPIToken);
     },
   },
 });
