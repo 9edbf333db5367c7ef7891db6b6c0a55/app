@@ -6,7 +6,7 @@ script(type="text/x-template" id="shopping-cart")
             h5.center-align.grey-text.lighten-4 Your Shopping Cart
 
             .card.horizontal(
-                v-for="item in cart" 
+                v-for="item in cart"
                 v-if="(typeof item === 'object' && 'image' in item)"
             )
                 .card-image
@@ -47,7 +47,7 @@ script(type="text/x-template" id="shopping-cart")
 
             .checkout-button
                 a.btn-flat.btn-block.btn-large.align-center.white-text.green.z-depth-3(v-on:click.prevent.stop="checkoutShoppingCart"): b
-                    i.material-icons.left loyalty 
+                    i.material-icons.left loyalty
                     | Check Out
 
         #payment-options.modal.bottom-sheet
@@ -59,12 +59,12 @@ script(type="text/x-template" id="shopping-cart")
                                 i.material-icons.left credit_card
                                 | Checkout with PayPal
 
-                        span &nbsp;        
+                        span &nbsp;
                         a.btn-flat.btn-block.btn-large.align-center.white-text.red.darken-2.z-depth-3(v-on:click.prevent.stop="checkoutWithMpesa")
                             b
-                                i.material-icons.left phone_iphone 
+                                i.material-icons.left phone_iphone
                                 | Checkout with M-Pesa
-        
+
         #mpesa-instructions.modal.modal-fixed-footer
             .modal-content
                 .row
@@ -72,35 +72,45 @@ script(type="text/x-template" id="shopping-cart")
                         ul.collection.with-header(style="list-style-type: numbers")
                             li.collection-header
                                 h5
-                                    | HOW TO PAY FOR YOUR 
+                                    | HOW TO PAY FOR YOUR
                                     br
-                                    | ORDER WITH 
+                                    | ORDER WITH
                                     span.red-text.text-darken-2 M-PESA
-                            li.collection-item 
+                            li.collection-item
                                 h6: b Go to M-PESA menu on your phone
-                            li.collection-item 
+                            li.collection-item
                                 h6 Choose <b>"Pay Bill"</b> from the M-PESA menu
-                            li.collection-item 
+                            li.collection-item
                                 h6 Enter the VituMob Business Number: <b>823823</b>
-                            li.collection-item 
+                            li.collection-item
                                 h6 Enter your <b>Order No.</b> as the account number: <b>{{ order.order_id }}</b>
-                            li.collection-item 
+                            li.collection-item
                                 h6 Enter the <b>price</b> as the <b>amount: {{ order.overall_cost_local }}</b>
-                            li.collection-item 
+                            li.collection-item
                                 h6 Enter your secret <b>PIN</b> and press <b>OK</b>
-                            li.collection-item 
+                            li.collection-item
                                 h6 Give us a few seconds to recieve a notification of your payment
-                            li.collection-item 
+                            li.collection-item
                                 h6 This pop up will automatically close and take you to the next final step.
-                            
+
             .modal-footer
                 a.btn-flat.align-center.white-text.blue.darken-3.z-depth-1.modal-action.modal-close.waves-effect(href="javascript:void(0)") OKAY!
+
+        #mpesa-stk-push-info.modal.modal-fixed-footer
+            .modal-content
+                .row
+                    .col.s12
+                        span.badge.blue(style="") Info
+                        h3 Payment Request Initiated
+                        p(style="font-size: 1.2em") We've initiated a payment request from our end and you should recieve a payment request pop up from Safaricom any moment now.
+            .modal-footer
+                a.btn-flat.align-center.white-text.blue.darken-3.z-depth-1.modal-action.modal-close.waves-effect(href="javascript:void(0)") Great!
 
         .col.s12.m12.empty-shopping-cart(v-if="cart.length == 0 && !loading")
             .row
                 .col.s12.m12.center-align
-                    i.material-icons.center-align.grey-text local_offer 
-            
+                    i.material-icons.center-align.grey-text local_offer
+
             .row.valign-wrapper
                 .col.s12.m12
                     h5.center-align.loading-text.grey-text
