@@ -1,5 +1,9 @@
 import { mapState } from 'vuex';
-import { GET_ORDER_CALCULATIONS, GET_PAYPAL_TOKEN } from '../store/types';
+import {
+  GET_ORDER_CALCULATIONS,
+  GET_PAYPAL_TOKEN,
+  GET_MPESA_PUSH_API_TOKEN,
+} from '../store/types';
 
 export default {
   template: '#shopping-cart',
@@ -8,7 +12,7 @@ export default {
       return textString.replace('/', ' / ');
     },
     formatAmount(amount) {
-      return Number(amount).toLocaleString('en');
+      return /^[0-9]+$/.test(amount) ? Number(amount).toLocaleString('en') : amount;
     },
   },
   data() {
@@ -22,11 +26,16 @@ export default {
     rates: 'rates',
     order: 'order',
     PayPalToken: 'PayPalToken',
+    MpesaAPIToken: 'MpesaAPIToken',
     loading: 'loading',
   }),
   created() {
     if (!this.PayPalToken) {
       this.$store.dispatch(GET_PAYPAL_TOKEN);
+    }
+
+    if (!this.MpesaAPIToken) {
+      this.$store.dispatch(GET_MPESA_PUSH_API_TOKEN);
     }
 
     // before creating order, user must be signed in
@@ -37,12 +46,14 @@ export default {
     }
 
     // if an order was exported but the server has not created the order
-    if (Object.keys(this.order).length > 0) {
+    if (!this.order.order_hex) {
       const persistUserOrderToDB = false;
       this.$store.commit('triggerLoadingState', true);
-      this.$store.dispatch(GET_ORDER_CALCULATIONS, persistUserOrderToDB).done(() => {
-        this.$store.commit('triggerLoadingState', false);
-      });
+      this.$store
+        .dispatch(GET_ORDER_CALCULATIONS, persistUserOrderToDB)
+        .done(() => {
+          this.$store.commit('triggerLoadingState', false);
+        });
     }
   },
   methods: {
@@ -50,6 +61,7 @@ export default {
       $(this.paymentOptionsModalId).modal().modal('open');
     },
     linkUserToOrder() {
+      // if the order has not been linked to the user who created it
       if (this.user.email && !this.order.user) {
         const { id, email } = this.user;
         if (!id) {
@@ -58,14 +70,14 @@ export default {
 
         const user = JSON.stringify({ id, email });
         const addUserToOrderRequest = $.ajax({
-          url: `https://vitumob-xyz.appspot.com/order/${this.order.order_hex}`,
+          url: `https://vitumob-prod.appspot.com/order/${this.order.order_hex}`,
           type: 'PUT',
           dataType: 'json',
           data: JSON.stringify({ user }),
           contentType: 'application/json',
         });
 
-        addUserToOrderRequest
+        return addUserToOrderRequest
           .done(() => {
             this.$store.commit('linkUserToOrder');
             console.log('Order matched with its user');
@@ -76,13 +88,16 @@ export default {
             }
           });
       }
+
+      // eslint-disable-next-line new-cap
+      return $.Deferred().resolve('userLinkedToOrder');
     },
     createUserOrder() {
       if (!this.order.order_hex) {
         const persistUserOrderToDB = true;
         // eslint-disable-next-line max-len
         const getOrderCalculations = this.$store.dispatch(GET_ORDER_CALCULATIONS, persistUserOrderToDB);
-        return getOrderCalculations.done(this.linkUserToOrder);
+        return getOrderCalculations.then(this.linkUserToOrder);
       }
 
       // eslint-disable-next-line new-cap
@@ -94,7 +109,7 @@ export default {
         const { access_token: PayPalAccessToken } = this.PayPalToken;
 
         const paypalRequest = $.ajax({
-          url: `https://vitumob-xyz.appspot.com/payments/paypal/create/${orderId}`,
+          url: `https://vitumob-prod.appspot.com/payments/paypal/create/${orderId}`,
           method: 'POST',
           headers: {
             Authorization: PayPalAccessToken,
@@ -118,6 +133,8 @@ export default {
                   $(this.paymentOptionsModalId).modal('close');
 
                   this.$store.commit('setPaymentDetails', JSON.parse(paymentDetailsJSONAsText));
+                  // eslint-disable-next-line no-console
+                  console.log(JSON.parse(paymentDetailsJSONAsText));
 
                   browser.close();
                   if (!this.user.phoneNumber) {
@@ -141,28 +158,62 @@ export default {
     },
     checkoutWithMpesa() {
       this.createUserOrder().done(() => {
-        const { order_id: orderId } = this.order;
-        const mpesaInstructionsModal = $('#mpesa-instructions').modal();
-        mpesaInstructionsModal.modal('open');
+        const { order_id: orderId, order_hex: orderHexId } = this.order;
+        const mpesaSTKPushInfoModal = $('#mpesa-stk-push-info').modal();
+        // const mpesaInstructionsModal = $('#mpesa-instructions').modal();
 
-        const ref = firebase.database().ref(`payments/mpesa/${orderId}`);
-        ref.on('value', (snapshot) => {
-          if (snapshot.exists()) {
-            console.log('A payment was recieved', snapshot.val());
-
-            snapshot.forEach((childSnapshot) => {
-              const payment = childSnapshot.val();
-              if (payment.order_id === orderId) {
-                mpesaInstructionsModal.modal('open');
-
-                if (!this.user.phoneNumber) {
-                  this.$router.push({ name: 'updateUserInfo' });
-                  return;
-                }
-                this.$router.push({ name: 'userLocation' });
-              }
-            });
+        this.$store.dispatch(GET_MPESA_PUSH_API_TOKEN).then((mpesaRequestToken) => {
+          // 1st check if the user has provided their phone number
+          if (!this.user.phone_number) {
+            this.$router.push({ name: 'updateUserInfo' });
+            return;
           }
+
+          const { access_token: MpesaAPIAccessToken } = mpesaRequestToken;
+          mpesaSTKPushInfoModal.modal('open');
+
+          const mpesaPushPaymentRequest = $.ajax({
+            url: `https://vitumob-prod.appspot.com/payments/mpesa/payment/push/${orderHexId}`,
+            method: 'POST',
+            headers: {
+              Authorization: MpesaAPIAccessToken,
+            },
+          });
+
+          mpesaPushPaymentRequest
+            .done(({ daraja_response: { CheckoutRequestID, MerchantRequestID } }) => {
+              firebase.database().ref(`payments/mpesa/${orderId}`)
+                .on('value', (snapshot) => {
+                  if (snapshot.exists()) {
+                    console.log('Payement details', snapshot.val());
+
+                    const mpesaPaymentDetails = {
+                      orderId,
+                      orderHexId,
+                      userPhoneNumber: this.user.phone_number,
+                      CheckoutRequestID,
+                      MerchantRequestID,
+                    };
+
+                    snapshot.forEach((childSnapshot) => {
+                      const completedMpesaPayment = childSnapshot.val();
+                      if (completedMpesaPayment.id === mpesaPaymentDetails.CheckoutRequestID) {
+                        Object.assign(mpesaPaymentDetails, completedMpesaPayment);
+                        // update the payment details
+                        this.$store.commit('setPaymentDetails', mpesaPaymentDetails);
+
+                        mpesaSTKPushInfoModal.modal('close');
+                        this.$router.push({ name: 'userLocation' });
+                        return;
+                      }
+                    });
+                  }
+                });
+            })
+            .fail(() => {
+              // Let the user make the payment manually, provide them with instructions
+              mpesaSTKPushInfoModal.modal('close');
+            });
         });
       });
     },
