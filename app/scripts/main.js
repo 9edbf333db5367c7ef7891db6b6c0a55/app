@@ -1,42 +1,15 @@
 import VueRouter from 'vue-router';
+import * as Sentry from '@sentry/browser';
+
 import store from './store/store';
 import config from './plugins/config';
+import routes from './routes';
 
-import Home from './components/home';
-import ShoppingCart from './components/shoppingCart';
-import SignIn from './components/signIn';
-import UpdateUserInfo from './components/updateUserInfo';
-import UserLocation from './components/userLocation';
-import checkedOut from './components/checkedOut';
-
-const routes = [{
-  path: '/',
-  name: 'home',
-  component: Home,
-}, {
-  path: '/cart',
-  name: 'shoppingCart',
-  component: ShoppingCart,
-}, {
-  path: '/user/signin',
-  name: 'signIn',
-  component: SignIn,
-}, {
-  path: '/user/update',
-  name: 'updateUserInfo',
-  component: UpdateUserInfo,
-}, {
-  path: '/user/location',
-  name: 'userLocation',
-  component: UserLocation,
-}, {
-  path: '/cart/checkedout',
-  name: 'checkedOut',
-  component: checkedOut,
-}, {
-  path: '/*',
-  redirect: '/',
-}];
+const vueIntegration = new Sentry.Integrations.Vue({ Vue });
+Sentry.init({
+  dsn: 'https://b4b091f8ee474fcea46dc0afa73455d1@sentry.io/1353589',
+  integrations: [vueIntegration],
+});
 
 Vue.config.debug = true;
 Vue.use(config);
