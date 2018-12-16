@@ -1,3 +1,6 @@
+import amazon from './amazon.com';
+
 export default {
-  amazon: require('./amazon.com').default, // eslint-disable-line global-require
+  amazonUS: amazon, // eslint-disable-line global-require
+  amazonUK: amazon,
 };
