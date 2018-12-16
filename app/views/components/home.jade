@@ -1,19 +1,39 @@
 script(type="text/x-template" id="homepage")
-    .row.valign-wrapper
+    .row.valign-dont-wrapper
         .col.s12.m12
             .card.small.shopping-site-option
                 .card-image
                     img(
-                        src="./images/amazon.png"                             v-on:click.prevent.stop="openInAppBrowser"
+                        src="./images/stores/amazon3.jpg"                             v-on:click.prevent.stop="openInAppBrowser"
                         href="https://amazon.com"
                         data-cart-url='https://www.amazon.com/gp/aw/c/ref=navm_hdr_cart'
-                        data-merchant='amazon'
+                        data-merchant='amazonUS'
                     )
+                    span.card-title: h4 Amazon US
                     a.btn-large.btn-floating.halfway-fab.waves-effect.waves-light.deep-orange
                         i.material-icons.activator info
 
                 .card-reveal
                     span.card-title
-                        h4 Amazon.com
+                        h4 Amazon US
+                        i.material-icons.right close
+                    p Earth's biggest online selection of books, magazines, music, DVDs, videos, electronics, computers, software, apparel &amp; accessories, shoes, jewelry ...
+
+        .col.s12.m12
+            .card.small.shopping-site-option
+                .card-image
+                    img(
+                        src="./images/stores/amazon-uk.jpg"                             v-on:click.prevent.stop="openInAppBrowser"
+                        href="https://amazon.com"
+                        data-cart-url='https://www.amazon.co.uk/gp/aw/c/ref=navm_hdr_cart'
+                        data-merchant='amazonUK'
+                    )
+                    span.card-title: h4 Amazon UK
+                    a.btn-large.btn-floating.halfway-fab.waves-effect.waves-light.deep-orange
+                        i.material-icons.activator info
+
+                .card-reveal
+                    span.card-title
+                        h4 Amazon UK
                         i.material-icons.right close
                     p Earth's biggest online selection of books, magazines, music, DVDs, videos, electronics, computers, software, apparel &amp; accessories, shoes, jewelry ...

@@ -90,6 +90,10 @@ nav{
     }
 }
 
+.row.root{
+    margin-top: 15px;
+}
+
 .row.root > .col{
     padding: 0 .25em;
 }
@@ -119,6 +123,20 @@ nav{
             height: 100%;
             border-radius: 6px;
             z-index: 100;
+        }
+        span{
+            z-index: 999;
+            font-size: 1.8em;
+            padding: 10px 15px;
+            &.card-title{
+                padding: 10px 15px;
+            }
+            h4, h5 {
+                font-size: 1.15em !important;
+                padding: 0 10px;
+                margin: 0;
+                font-weight: 800;
+            }
         }
         a.btn-large{
             width: 35px;
@@ -238,7 +256,7 @@ nav{
     }
 }
 
-#mpesa-instructions{
+#mpesa-instructions, #mpesa-stk-push-instruction{
     .modal-content {
         padding: 0;
         .collection.with-header{
